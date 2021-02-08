@@ -1,0 +1,266 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body,
+#app,
+.wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;
+}
+
+a {
+    text-decoration: none
+}
+
+
+.content-box {
+    position: absolute;
+    left: 250px;
+    right: 0;
+    top: 70px;
+    bottom: 0;
+    padding-bottom: 30px;
+    -webkit-transition: left .3s ease-in-out;
+    transition: left .3s ease-in-out;
+    background: #eff3fa;
+}
+
+.content {
+    width: auto;
+    height: 100%;
+    padding: 10px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+}
+
+.content-collapse {
+    left: 65px;
+}
+
+.container {
+    padding: 30px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.crumbs {
+    margin: 10px 0;
+}
+
+.el-table th {
+    background-color: #f5f7fa !important;
+}
+
+.pagination {
+    margin: 20px 0;
+    text-align: right;
+}
+
+.plugins-tips {
+    padding: 20px 10px;
+    margin-bottom: 20px;
+}
+
+.el-button+.el-tooltip {
+    margin-left: 10px;
+}
+
+.el-table tr:hover {
+    background: #f6faff;
+}
+
+.mgb20 {
+    margin-bottom: 20px;
+}
+
+.move-enter-active,
+.move-leave-active {
+    transition: opacity .5s;
+}
+
+.move-enter,
+.move-leave {
+    opacity: 0;
+}
+
+/*BaseForm*/
+
+.form-box {
+    width: 600px;
+}
+
+.form-box .line {
+    text-align: center;
+}
+
+.el-time-panel__content::after,
+.el-time-panel__content::before {
+    margin-top: -7px;
+}
+
+.el-time-spinner__wrapper .el-scrollbar__wrap:not(.el-scrollbar__wrap--hidden-default) {
+    padding-bottom: 0;
+}
+
+/*Upload*/
+
+.pure-button {
+    width: 150px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.g-core-image-corp-container .info-aside {
+    height: 45px;
+}
+
+.el-upload--text {
+    background-color: #fff;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    box-sizing: border-box;
+    width: 360px;
+    height: 180px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.el-upload--text .el-icon-upload {
+    font-size: 67px;
+    color: #97a8be;
+    margin: 40px 0 16px;
+    line-height: 50px;
+}
+
+.el-upload--text {
+    color: #97a8be;
+    font-size: 14px;
+    text-align: center;
+}
+
+.el-upload--text em {
+    font-style: normal;
+}
+
+/*VueEditor*/
+
+.ql-container {
+    min-height: 400px;
+}
+
+.ql-snow .ql-tooltip {
+    transform: translateX(117.5px) translateY(10px) !important;
+}
+
+.editor-btn {
+    margin-top: 20px;
+}
+
+/*markdown*/
+
+.v-note-wrapper .v-note-panel {
+    min-height: 500px;
+}
+
+.filterDiv {
+    display: flex;
+    flex-wrap: wrap;
+}
+.filterBox {
+    border: 1px solid #D8DDE4;
+    border-radius: 4px;
+    display: flex;
+    font-size: 14px;
+    margin-right: 15px;
+    margin-top: 15px;
+}
+.filterBox > p {
+    width: 90px;
+    text-align: center;
+    line-height: 30px;
+    background: #ECF1F4;
+    color: #333;
+    border-right:1px solid #D8DDE4;
+}
+.filterBox .el-input--small .el-input__inner{
+    line-height: 30px;
+    height: 30px;
+    border:none;
+}
+.filterBox .el-cascader--small{
+    line-height: 30px;
+}
+.btns .el-button--primary{
+    background-color: #427FDA;
+    border-color: transparent;
+}
+.btns {
+    display: flex;
+}
+.breadcrumbTopTit {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    font-size: 14px;
+}
+.el-dialog__header {
+    padding: 0px 30px !important;
+    height: 36px;
+    background: #427FDA;
+}
+.el-dialog__title {
+    line-height: 36px !important;
+    font-size: 16px !important;
+    color: #fff !important; 
+}
+.el-dialog__headerbtn{
+    top: 8px !important;
+    font-size: 18px !important;
+}
+.el-dialog__headerbtn .el-dialog__close{
+    color: #fff !important;
+}
+.el-tree-node:focus > .el-tree-node__content {
+    background-color: #427fda !important;
+    color: #fff !important;
+
+    box-shadow: 0px 2px 5px 0px rgba(56, 87, 151, 0.5);
+}
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #427fda !important;
+    color: #fff !important;
+
+    box-shadow: 0px 2px 5px 0px rgba(56, 87, 151, 0.5);
+}
+.el-tree-node__content {
+    height: 32px !important;
+    margin: 5px !important;
+}
+.el-dialog{
+    max-height: 78%;
+}
+.el-dialog__body{
+    max-height: 56vh;
+    overflow-y: auto;
+}
+
+.el-dialog__body>section>div{
+    width: 100%;
+}
+.el-select{
+    width:100%;
+}

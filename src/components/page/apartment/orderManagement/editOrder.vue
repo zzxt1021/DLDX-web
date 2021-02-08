@@ -1,0 +1,245 @@
+<template>
+    <div>
+        <el-dialog :visible.sync="dialogVisible" :before-close="handleClose" title="订单编辑" :close-on-click-modal="false">
+            <el-container>
+                <div class="modelK">
+                    <p class="modelTit">入住信息</p>
+                </div>
+                <el-form label-width="120px">
+                    <el-form-item label="入租人">
+                        <el-row style="margin-bottom: 10px">
+                            <el-col :span="6" class="czr">
+                                <el-input v-model="consumer['consumerName']" placeholder="请填写入住人姓名" disabled></el-input>
+                            </el-col>
+                            <el-col :span="12" :offset="1">
+                                <el-input v-model="consumer['consumerNo']" placeholder="请填写入住人身份证" disabled></el-input>
+                            </el-col>
+                        </el-row>
+                    </el-form-item>
+                    <el-form-item label="预留手机号">
+                        <el-input v-model="consumer.consumerTel" placeholder="请填写入住人手机号" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="房间类型">
+                        <div class="timeDiv">
+                            <div>
+                                <el-select v-model="roomType" placeholder="请选择" :disabled="contractState == 1">
+                                    <el-option v-for="item in roomTypeList" :key="item.code" :label="item.name" :value="item.code">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                            <p class="rmn">房间名称：{{ roomName }}</p>
+                            <p class="crm" v-if="contractState == 2 || contractState == 3" @click="choiceRoom">选择房间</p>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="入住时间" prop="times">
+                        <div class="timeDiv">
+                            <div v-if="contractState == 1">
+                                <el-date-picker class="date" v-model="times[0]" type="date" disabled> </el-date-picker>
+                                <span style="padding: 0 10px">至</span>
+                                <el-date-picker
+                                    class="date"
+                                    v-model="times[1]"
+                                    :picker-options="endDatePicker"
+                                    type="date"
+                                    value-format="yyyy-MM-dd"
+                                    placeholder="结束时间"
+                                >
+                                </el-date-picker>
+                            </div>
+                            <div v-if="contractState == 2 || contractState == 3">
+                                <el-date-picker
+                                    v-model="times"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期"
+                                    :picker-options="isDisabled"
+                                >
+                                </el-date-picker>
+                            </div>
+                            <div class="dayDiv">
+                                <el-input v-model="days" :disabled="true"></el-input>
+                                <span style="padding-left: 10px">天</span>
+                            </div>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        <el-input type="textarea" :rows="3" placeholder="备注信息" v-model="remark"> </el-input>
+                    </el-form-item>
+                </el-form>
+                <el-footer style="height: 40px; border-top: 1px solid #ccc">
+                    <div class="btnss">
+                        <p @click="save">
+                            <img src="../../../../assets/img/gou.png" />
+                            <span>确定</span>
+                        </p>
+                        <p style="background: #427fda" @click="handleClose">
+                            <img src="../../../../assets/img/cha.png" />
+                            <span>取消</span>
+                        </p>
+                    </div>
+                </el-footer>
+            </el-container>
+        </el-dialog>
+        <roomChoice v-if="rshow" @func="closer"></roomChoice>
+    </div>
+</template>
+<script>
+import { SystemService } from '../../../../api/system';
+import { RoomService } from '../../../../api/room';
+import roomChoice from './roomChoice';
+export default {
+    name: 'editOrder',
+    props: ['funx', 'oData'],
+    components:{
+        roomChoice
+    },
+    data() {
+        return {
+            dialogVisible: true,
+            consumer: {},
+            roomType: '',
+            times: '',
+            etime: '',
+            roomTypeList: [],
+            endDatePicker: this.endDate(),
+            days: 0,
+            remark: '',
+            contractState: '',
+            roomName: '',
+            isDisabled: {
+                disabledDate(time) {
+                    return time.getTime() <= new Date().getTime() - 8.64e7;
+                }
+            },
+            rshow:false,
+        };
+    },
+    created() {
+        this.consumer = {
+            consumerName: this.oData.contract.consumerName,
+            consumerNo: this.oData.contract.consumerNo,
+            consumerTel: this.oData.contract.consumerTel
+        };
+        this.roomType = this.oData.roomDto.roomType;
+        this.times = [this.oData.contract.reserveStartDate.substring(0, 10), this.oData.contract.reserveEndDate.substring(0, 10)];
+        this.etime = this.oData.contract.reserveEndDate.substring(0, 10);
+        this.remark = this.oData.contract.remark;
+        this.contractState = this.oData.contract.contractState;
+        this.roomName = this.oData.roomDto.roomName;
+        // 获取房间类型
+        SystemService.getSysCodePid('20').then((res) => {
+            this.roomTypeList = res;
+        });
+    },
+    methods: {
+        save() {
+            let dc={ contract: { contractId: this.oData.contract.contractId, 'reserveEndDate': this.times[1] ,'reserveStartDate':this.times[0],} };
+            if(this.roomId){
+                dc.contract.roomId = this.roomId;
+            }else{
+                 dc.contract.roomId = this.oData.roomDto.roomId;
+            }
+            RoomService.editOrder(dc).then((res) => {
+                if(res.status == 0){
+                    this.$message.success('编辑成功！');
+                    this.$emit('funx', 'ok');
+                }else{
+                    this.$message.error(res.message);
+                }
+            });
+        },
+        endDate() {
+            const self = this;
+            return {
+                disabledDate(time) {
+                    return time.getTime() <= new Date().getTime() - 8.64e7;
+                }
+            };
+        },
+        // 选择房间
+        choiceRoom(){
+            console.log(this.rshow)
+            this.rshow = true;
+        },
+        closer(d){
+            if(d!='close'){
+                this.roomType = d.roomType;
+                this.roomName = d.roomName;
+                this.roomId = d.roomId;
+            }
+            this.rshow = false;
+        },
+        //取消
+        handleClose: function () {
+            this.dialogVisible = false;
+            this.$emit('funx', 'close');
+        }
+    },
+    watch: {
+        // 计算天数
+        times: function () {
+            if (this.times) {
+                console.log(this.times);
+                let dateDiff = new Date(this.times[1]).getTime() - new Date(this.times[0]).getTime(); //时间差的毫秒数
+                let dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000)); //计算出相差天数
+                this.days = dayDiff;
+            } else {
+                this.days = 0;
+            }
+        }
+    }
+};
+</script>
+<style scoped>
+.btnss {
+    display: flex;
+    justify-content: center;
+}
+.btnss p {
+    width: 100px;
+    line-height: 32px;
+    background: #00b292;
+    border-radius: 4px;
+    color: #fefefe;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+.btnss p > img {
+    margin-right: 10px;
+}
+.timeDiv {
+    display: flex;
+}
+.dayDiv {
+    margin-left: 15px;
+    width: 70px;
+    display: flex;
+}
+.modelK {
+    height: 40px;
+    border-bottom: 1px solid #e2e2e2;
+    color: #08588e;
+    line-height: 40px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.modelTit {
+    border-bottom: 2px solid #08588e;
+}
+.rmn {
+    margin-left: 20px;
+}
+.crm {
+    margin-left: 20px;
+    color: #427fda;
+    text-decoration: underline;
+    cursor: pointer;
+}
+</style>
