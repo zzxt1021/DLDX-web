@@ -44,7 +44,7 @@
                             </el-select>
                         </div>
                     </div>
-                    <div class="filterBox">
+                    <!-- <div class="filterBox">
                         <p>预订时间</p>
                         <div>
                             <el-date-picker
@@ -57,11 +57,12 @@
                             >
                             </el-date-picker>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="btns">
                     <el-button type="primary" icon="el-icon-search" @click="find">查询</el-button>
                     <el-button type="primary" icon="el-icon-refresh" @click="resetting">重置</el-button>
+                    <el-button type="primary" icon="el-icon-user" @click="reserve">预定</el-button>
                 </div>
             </div>
         </div>
@@ -71,43 +72,79 @@
                 <el-row :gutter="15">
                     <el-col :span="4" style="margin-top: 10px" v-for="(a, b) in v" :key="b">
                         <el-card shadow="hover" class="roomDiv">
-                            <!-- <div class="roomTop">
+                            <div class="roomTop">
                                 <p>{{ a.roomName }}房间</p>
                                 <img src="../../../../assets/img/empty.png" v-if="a.useState == 1" />
                                 <img src="../../../../assets/img/filled.png" v-if="a.useState == 2" />
                             </div>
-                            <div class="roomBot">
+                            <div class="roomBot" v-if="a.consumers">
+                                <div class="chuang" v-if="a.consumers[0]">
+                                    <p>
+                                        <span>1号床位</span>
+                                        <img src="../../../../assets/img/nan.png"/>
+                                    </p>
+                                    <div class="yajin">
+                                        <p>
+                                            <span style="padding-right:4px">{{a.consumers[0].consumerName}}</span>
+                                            <span class="yjIcon">押</span>
+                                        </p>
+                                    </div>
+                                    <div class="roomBtn">
+                                        <p class="tf">退房</p>
+                                    </div>
+                                </div>
+                                <div class="xian"></div>
+                                <div class="chuang" v-if="a.consumers[1]">
+                                    <p>
+                                        <span>2号床位</span>
+                                        <img src="../../../../assets/img/nv.png"/>
+                                    </p>
+                                    <div class="yajin">
+                                        <span style="padding-right:4px">{{a.consumers[1].consumerName}}</span>
+                                        <span class="yjIcon">押</span>
+                                    </div>
+                                    <div class="roomBtn">
+                                        <p class="tf">退房</p>
+                                    </div>
+                                </div>
+                                <div class="chuang" v-if="!a.consumers[1]">
+                                    <p>
+                                        <span>2号床位</span>
+                                        <img src="../../../../assets/img/nv.png"/>
+                                    </p>
+                                    <div class="yajin">
+                                    </div>
+                                    <div class="roomBtn">
+                                        <p class="ruzhu" >入住</p>
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="roomBot" v-if="!a.consumers">
                                 <div class="chuang">
                                     <p>
                                         <span>1号床位</span>
                                         <img src="../../../../assets/img/nan.png"/>
                                     </p>
                                     <div class="yajin">
-                                        <p>押金：200</p>
                                     </div>
                                     <div class="roomBtn">
-                                        <p class="tf">退房</p>
-                                        <p class="ruzhu">入住</p>
-                                        <p class="yuding">预定</p>
+                                        <p class="ruzhu" >入住</p>
                                     </div>
                                 </div>
                                 <div class="xian"></div>
-                                <div class="chuang">
+                                <div class="chuang" >
                                     <p>
-                                        <span>1号床位</span>
+                                        <span>2号床位</span>
                                         <img src="../../../../assets/img/nv.png"/>
                                     </p>
                                     <div class="yajin">
-                                        <p>押金：200</p>
                                     </div>
                                     <div class="roomBtn">
-                                        <p class="tf">退房</p>
                                         <p class="ruzhu">入住</p>
-                                        <p class="yuding">预定</p>
                                     </div>
                                 </div>
-                            </div> -->
-                            <div class="roomBG">
+                            </div> 
+                            <!-- <div class="roomBG">
                                 <div class="roomBG-L">
                                     <img src="../../../../assets/img/chuang1.png" v-if="a.roomType == '20-01'" />
                                     <img src="../../../../assets/img/chuang2.png" v-if="a.roomType == '20-02'" />
@@ -132,7 +169,7 @@
                                 <p class="rbtns xz" @click="moveInto(a, 2)">
                                     预定
                                 </p>
-                            </div>
+                            </div> -->
                         </el-card>
                     </el-col>
                 </el-row>
@@ -437,13 +474,22 @@ export default {
     background: #19bc69;
     color: #fff;
 }
-.tf {
+.roomBtn>.tf {
     color: #fe6931;
     border-color: #fe6931;
+    cursor: pointer;
 }
 .tf:hover {
     background: #fe6931;
     color: #fff;
+}
+.yjIcon{
+    color: #fe6931;
+    border-radius: 50%;
+    border:1px solid #fe6931;
+    padding:2px;
+    font-size: 14px;
+    cursor: pointer;
 }
 .roomBG {
     display: flex;
