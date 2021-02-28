@@ -69,7 +69,7 @@ export default {
             }
             this.tagsList = arr;
         });
-        this.init();
+        //this.init();
     },
     methods: {
         play2(){

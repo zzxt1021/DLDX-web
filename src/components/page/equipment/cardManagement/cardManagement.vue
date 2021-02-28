@@ -25,7 +25,7 @@
             </div>
             <div class="btns">
                 <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
-                <el-button type="primary" icon="el-icon-refresh" @click="resetting">重置</el-button>
+                <el-button type="primary" icon="el-icon-refresh" @click="resetting">清空查询</el-button>
                 <el-button type="primary" icon="el-icon-setting" @click="markCard">制作功能卡</el-button>
             </div>
         </div>
@@ -104,7 +104,7 @@ export default {
             this.currentPage = 1;
             this.find();
         },
-        // 重置
+        // 清空查询
         resetting(){
             this.card = {};
             this.currentPage = 1;

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div >
         <div class="breadcrumbTopTit">
             <p>位置：</p>
             <el-breadcrumb separator="/">
@@ -61,8 +61,8 @@
                 </div>
                 <div class="btns">
                     <el-button type="primary" icon="el-icon-search" @click="find">查询</el-button>
-                    <el-button type="primary" icon="el-icon-refresh" @click="resetting">重置</el-button>
-                    <el-button type="primary" icon="el-icon-user" @click="reserve">预定</el-button>
+                    <el-button type="primary" icon="el-icon-refresh" @click="resetting">清空查询</el-button>
+                    <el-button type="primary" icon="el-icon-user" @click="moveInto({}, 2)">预定</el-button>
                 </div>
             </div>
         </div>
@@ -71,79 +71,106 @@
                 <p>{{ k }}</p>
                 <el-row :gutter="15">
                     <el-col :span="4" style="margin-top: 10px" v-for="(a, b) in v" :key="b">
-                        <el-card shadow="hover" class="roomDiv">
-                            <div class="roomTop">
+                        <el-card shadow="hover" class="roomDiv" v-if="a.roomName.substring(0, 1) != '7'">
+                            <div class="roomTop" :class="{ fan2: a.roomType == '20-01', fan1: a.roomType == '20-02' }">
                                 <p>{{ a.roomName }}房间</p>
-                                <img src="../../../../assets/img/empty.png" v-if="a.useState == 1" />
-                                <img src="../../../../assets/img/filled.png" v-if="a.useState == 2" />
+                                <div
+                                    class="stateP"
+                                    :class="{ s1: a.useState == '0', s2: a.useState == '2', s3: a.useState == '3', s4: a.useState == '9' }"
+                                    v-if="a.useState == '0' || a.useState == '2' || a.useState == '3' || a.useState == '9'"
+                                    @mouseenter="a.useState == '3' ||a.useState == '9' || a.useState == '0'?two(a):''"
+                                    @mouseleave="a.useState == '3'||a.useState == '9' || a.useState == '0'?twoleave(a):''"
+                                >
+                                    <span v-if="a.useState == '0'">空闲</span>
+                                    <span v-if="a.useState == '2'">满员</span>
+                                    <span v-if="a.useState == '3'">待打扫</span>
+                                    <span v-if="a.useState == '9'">不可用</span>
+
+                                    <img
+                                        src="../../../../assets/img/right.png"
+                                        v-if="!(a.useState == '2' && a.consumers && a.consumers.length > 0)"
+                                    />
+                                    <div class="stateFDiv" v-if="a.useState == '3' && wdsShow && roomData.roomId == a.roomId" @mouseenter="dsenter" @mouseleave="dsleave">
+                                        <p @click.stop="okds(a,1)">已打扫</p>
+                                        <p @click.stop="okds(a,2)">不可用</p>
+                                    </div>
+                                    <div class="stateFDiv" v-if="a.useState == '9' && wdsShow && roomData.roomId == a.roomId" @mouseenter="dsenter" @mouseleave="dsleave">
+                                        <p @click.stop="okds(a,3)">可使用</p>
+                                        <p @click.stop="okds(a,4)">待打扫</p>
+                                    </div>
+                                    <div class="stateFDiv" v-if="a.useState == '0' && wdsShow && roomData.roomId == a.roomId" @mouseenter="dsenter" @mouseleave="dsleave">
+                                        <p @click.stop="okds(a,5)">待打扫</p>
+                                        <p @click.stop="okds(a,6)">不可用</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="roomBot" v-if="a.consumers">
+                            <div class="roomBot" v-if="a.consumers && a.consumers.length > 0">
                                 <div class="chuang" v-if="a.consumers[0]">
                                     <p>
                                         <span>1号床位</span>
-                                        <img src="../../../../assets/img/nan.png"/>
+                                        <img src="../../../../assets/img/nan.png" v-if="a.consumers[0].consumerSex == '男'" />
+                                        <img src="../../../../assets/img/nv.png" v-if="a.consumers[0].consumerSex == '女'" />
                                     </p>
                                     <div class="yajin">
                                         <p>
-                                            <span style="padding-right:4px">{{a.consumers[0].consumerName}}</span>
-                                            <span class="yjIcon">押</span>
+                                            <span style="padding-right: 4px">{{ a.consumers[0].consumerName }}</span>
+                                            <span class="yjIcon" v-if="a.consumers[0].deposit">押</span>
                                         </p>
                                     </div>
                                     <div class="roomBtn">
-                                        <p class="tf">退房</p>
+                                        <p class="tf" @click="backRoom(a, 0)">退房</p>
                                     </div>
                                 </div>
                                 <div class="xian"></div>
                                 <div class="chuang" v-if="a.consumers[1]">
                                     <p>
                                         <span>2号床位</span>
-                                        <img src="../../../../assets/img/nv.png"/>
+                                        <img src="../../../../assets/img/nan.png" v-if="a.consumers[1].consumerSex == '男'" />
+                                        <img src="../../../../assets/img/nv.png" v-if="a.consumers[1].consumerSex == '女'" />
                                     </p>
                                     <div class="yajin">
-                                        <span style="padding-right:4px">{{a.consumers[1].consumerName}}</span>
-                                        <span class="yjIcon">押</span>
+                                        <span style="padding-right: 4px">{{ a.consumers[1].consumerName }}</span>
+                                        <span class="yjIcon" v-if="a.consumers[1].deposit">押</span>
                                     </div>
                                     <div class="roomBtn">
-                                        <p class="tf">退房</p>
+                                        <p class="tf" @click="backRoom(a, 1)">退房</p>
                                     </div>
                                 </div>
                                 <div class="chuang" v-if="!a.consumers[1]">
                                     <p>
                                         <span>2号床位</span>
-                                        <img src="../../../../assets/img/nv.png"/>
                                     </p>
-                                    <div class="yajin">
-                                    </div>
+                                    <div class="yajin"></div>
                                     <div class="roomBtn">
-                                        <p class="ruzhu" >入住</p>
+                                        <p class="ruzhu" @click="moveInto(a, 1)" v-show="a.useState == 0 || a.useState == 1">入住</p>
                                     </div>
                                 </div>
-                            </div> 
-                            <div class="roomBot" v-if="!a.consumers">
+                            </div>
+                            <div class="roomBot" v-if="!a.consumers || a.consumers.length == 0">
                                 <div class="chuang">
                                     <p>
                                         <span>1号床位</span>
-                                        <img src="../../../../assets/img/nan.png"/>
+                                        <img src="../../../../assets/img/nan.png" v-if="a.consumerSex == '男'" />
+                                        <img src="../../../../assets/img/nv.png" v-if="a.consumerSex == '女'" />
                                     </p>
-                                    <div class="yajin">
-                                    </div>
+                                    <div class="yajin"></div>
                                     <div class="roomBtn">
-                                        <p class="ruzhu" >入住</p>
+                                        <p class="ruzhu" @click="moveInto(a, 1)" v-show="a.useState == 0 || a.useState == 1">入住</p>
                                     </div>
                                 </div>
                                 <div class="xian"></div>
-                                <div class="chuang" >
+                                <div class="chuang">
                                     <p>
                                         <span>2号床位</span>
-                                        <img src="../../../../assets/img/nv.png"/>
+                                        <img src="../../../../assets/img/nan.png" v-if="a.consumerSex == '男'" />
+                                        <img src="../../../../assets/img/nv.png" v-if="a.consumerSex == '女'" />
                                     </p>
-                                    <div class="yajin">
-                                    </div>
+                                    <div class="yajin"></div>
                                     <div class="roomBtn">
-                                        <p class="ruzhu">入住</p>
+                                        <p class="ruzhu" @click="moveInto(a, 1)" v-show="a.useState == 0 || a.useState == 1">入住</p>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                             <!-- <div class="roomBG">
                                 <div class="roomBG-L">
                                     <img src="../../../../assets/img/chuang1.png" v-if="a.roomType == '20-01'" />
@@ -171,6 +198,71 @@
                                 </p>
                             </div> -->
                         </el-card>
+                        <el-card shadow="hover" class="roomDiv" v-if="a.roomName.substring(0, 1) == '7'">
+                            <div class="roomTop" :class="{ fan2: a.roomType == '20-01', fan1: a.roomType == '20-02' }">
+                                <p>{{ a.roomName }}房间</p>
+                                <div
+                                    class="stateP"
+                                    :class="{ s1: a.useState == '0', s2: a.useState == '2', s3: a.useState == '3', s4: a.useState == '9' }"
+                                    v-if="a.useState == '0' || a.useState == '2' || a.useState == '3' || a.useState == '9'"
+                                    @mouseenter="a.useState == '3' ||a.useState == '9' || a.useState == '0'?two(a):''"
+                                    @mouseleave="a.useState == '3'||a.useState == '9' || a.useState == '0'?twoleave(a):''"
+                                >
+                                    <span v-if="a.useState == '0'">空闲</span>
+                                    <span v-if="a.useState == '2'">满员</span>
+                                    <span v-if="a.useState == '3'">待打扫</span>
+                                    <span v-if="a.useState == '9'">不可用</span>
+
+                                    <img
+                                        src="../../../../assets/img/right.png"
+                                        v-if="!(a.useState == '2' && a.consumers && a.consumers.length > 0)"
+                                    />
+                                    <div class="stateFDiv" v-if="a.useState == '3' && wdsShow && roomData.roomId == a.roomId" @mouseenter="dsenter" @mouseleave="dsleave">
+                                        <p @click.stop="okds(a,1)">已打扫</p>
+                                        <p @click.stop="okds(a,2)">不可用</p>
+                                    </div>
+                                    <div class="stateFDiv" v-if="a.useState == '9' && wdsShow && roomData.roomId == a.roomId" @mouseenter="dsenter" @mouseleave="dsleave">
+                                        <p @click.stop="okds(a,3)">可使用</p>
+                                        <p @click.stop="okds(a,4)">待打扫</p>
+                                    </div>
+                                    <div class="stateFDiv" v-if="a.useState == '0' && wdsShow && roomData.roomId == a.roomId" @mouseenter="dsenter" @mouseleave="dsleave">
+                                        <p @click.stop="okds(a,5)">待打扫</p>
+                                        <p @click.stop="okds(a,6)">不可用</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="roomBot" v-if="a.consumers && a.consumers.length > 0">
+                                <div class="chuang" v-if="a.consumers[0]">
+                                    <p>
+                                        <span>床位</span>
+                                        <img src="../../../../assets/img/nan.png" v-if="a.consumers[0].consumerSex == '男'" />
+                                        <img src="../../../../assets/img/nv.png" v-if="a.consumers[0].consumerSex == '女'" />
+                                    </p>
+                                    <div class="yajin">
+                                        <p>
+                                            <span style="padding-right: 4px">{{ a.consumers[0].consumerName }}</span>
+                                            <span class="yjIcon" v-if="a.consumers[0].deposit">押</span>
+                                        </p>
+                                    </div>
+                                    <div class="roomBtn">
+                                        <p class="tf" @click="backRoom(a, 0)">退房</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="roomBot" v-if="!a.consumers || a.consumers.length == 0">
+                                <div class="chuang">
+                                    <p>
+                                        <span>床位</span>
+                                        <img src="../../../../assets/img/nan.png" v-if="a.consumerSex == '男'" />
+                                        <img src="../../../../assets/img/nv.png" v-if="a.consumerSex == '女'" />
+                                    </p>
+                                    <div class="yajin"></div>
+                                    <div class="roomBtn">
+                                        <p class="ruzhu" @click="moveInto(a, 1)">入住</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-card>
                     </el-col>
                 </el-row>
             </div>
@@ -184,6 +276,7 @@
             :etime="cardtimes[1]"
             :rid="roomData.roomId"
             :rname="roomData.roomName"
+            :contractId="ccontractId"
         ></readCard>
         <addConsumer v-if="addConShow" @funa="addConsumerClose" :roomData="roomData"></addConsumer>
     </div>
@@ -224,7 +317,10 @@ export default {
             continuePage: false,
             cardShow: false,
             cardtimes: [], //卡的时间
-            addConShow:false,//添加入住人显示
+            addConShow: false, //添加入住人显示
+            ccontractId: '', //入住成功传过来的订单id
+            wdsShow:false, // 未打扫状态界面
+            enterDS:false,//是否进入二级页面
         };
     },
     mounted() {
@@ -262,10 +358,10 @@ export default {
             }
             return fmt;
         },
-        // 重置按钮
-        resetting(){
-            this.buildTypeId =  ['0', '0_0'];
-            this.filterData={ areaId: 'a01',roomName: '', roomType: '', useState: '' };
+        // 清空查询按钮
+        resetting() {
+            this.buildTypeId = ['0', '0_0'];
+            this.filterData = { areaId: 'a01', roomName: '', roomType: '', useState: '' };
             this.times = [];
             this.find();
         },
@@ -300,29 +396,53 @@ export default {
                 this.roomList = res;
             });
         },
-        unbindCardDev(cid,did){
-            EquipmentService.unbindCardDev({'cardId':cid,'deviceId':did}).then(()=>{})
+        unbindCardDev(cid, did) {
+            EquipmentService.unbindCardDev({ cardId: cid, deviceId: did }).then(() => {});
         },
+        //先根据房间id查有效订单
+        findContract(id, x) {
+            let contractId = '';
+            return new Promise((resolve, reject) => {
+                RoomService.checkContractByRomm(id).then((res) => {
+                    for (let m = 0; m < res.length; m++) {
+                        if (
+                            res[m].consumerList[0].consumerNo == this.roomData.consumers[x].consumerNo &&
+                            res[m].consumerList[0].consumerName == this.roomData.consumers[x].consumerName
+                        ) {
+                            contractId = res[m].contract.contractId;
+                        }
+                    }
+                    resolve(contractId);
+                });
+            });
+        },
+
         // 退房
-        backRoom(d) {
+        backRoom(d, x) {
             this.roomData = d;
-            this.$confirm('是否确定退房?', '提示', {
+            this.$confirm('是否确定退房并退还押金?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
-            }).then(() => {
-                RoomService.checkOutRoom(d.roomId).then((res) => {
+            }).then(async () => {
+                let contractId = await this.findContract(d.roomId, x);
+                RoomService.checkOutRoomBad(d.roomId, contractId).then((res) => {
                     if (res.m.length >= 0) {
                         this.$message.success('退房成功！');
                         this.roomData.useState = 1;
-                        this.roomData.consumers = null;
+                        this.roomData.consumers.splice(x, 1); 
+                        if (this.roomData.consumers.length == 0) {
+                            this.roomData.useState = 3;
+                        } else if (this.roomData.consumers.length == 1) {
+                            this.roomData.useState = 1;
+                        }
                     }
-                    if(res.m && res.m.length>0){
+                    if (res.m && res.m.length > 0) {
                         let cardDevList = res.m;
                         let uid = [];
                         for (let k = 0; k < cardDevList.length; k++) {
                             // 门卡管理注销
-                            this.unbindCardDev(cardDevList[k].cardId,cardDevList[k].deviceId);
+                            this.unbindCardDev(cardDevList[k].cardId, cardDevList[k].deviceId);
                             uid.push(Number(cardDevList[k].lockUser));
                         }
                         //控客注销
@@ -335,8 +455,34 @@ export default {
                         };
                         EquipmentService.updateDevice(dtt).then((res) => {});
                     }
-                    //this.find();
                 });
+
+                // RoomService.checkOutRoom(d.roomId).then((res) => {
+                //     if (res.m.length >= 0) {
+                //         this.$message.success('退房成功！');
+                //         this.roomData.useState = 1;
+                //         this.roomData.consumers = null;
+                //     }
+                //     if(res.m && res.m.length>0){
+                //         let cardDevList = res.m;
+                //         let uid = [];
+                //         for (let k = 0; k < cardDevList.length; k++) {
+                //             // 门卡管理注销
+                //             this.unbindCardDev(cardDevList[k].cardId,cardDevList[k].deviceId);
+                //             uid.push(Number(cardDevList[k].lockUser));
+                //         }
+                //         //控客注销
+                //         let dtt = {
+                //             action: '8',
+                //             args: {
+                //                 userId: uid
+                //             },
+                //             deviceId: cardDevList[0].deviceId
+                //         };
+                //         EquipmentService.updateDevice(dtt).then((res) => {});
+                //     }
+                //     //this.find();
+                // });
             });
         },
         // 房间详情页打开
@@ -355,13 +501,13 @@ export default {
             this.continuePage = false;
         },
         // 添加入住人
-        addConsumer:function(da){
+        addConsumer: function (da) {
             this.roomData = da;
             this.addConShow = true;
         },
         // 关闭入住人
-        addConsumerClose:function(da){
-            if(da == 'ok'){
+        addConsumerClose: function (da) {
+            if (da == 'ok') {
                 this.roomData.consumers.push({});
             }
             this.addConShow = false;
@@ -370,35 +516,232 @@ export default {
         closePage: function (data) {
             console.log(data);
             if (data[0] == 'ok') {
-                if(data[1] == 1){
-                    this.roomData.useState = 2;
-                    this.roomData.consumers = data[2];
+                if (data[1] == 1) {
+                    this.ccontractId = data[3];
+                    if (this.roomData.consumers) {
+                        this.roomData.consumers.push(data[2][0]);
+                    } else {
+                        this.roomData.consumers = [];
+                        this.roomData.consumers.push(data[2][0]);
+                    }
+                    if (this.roomData.consumers.length == 1) {
+                        this.roomData.useState = 1;
+                    } else {
+                        this.roomData.useState = 2;
+                    }
                 }
-                
+
                 //this.find();
             } else if (data[0] == 'close') {
             } else {
-                if(data[1] == 1){
-                    this.roomData.useState = 2;
-                    this.roomData.consumers = data[2];
+                if (data[1] == 1) {
+                    this.ccontractId = data[3];
+                    if (this.roomData.consumers) {
+                        this.roomData.consumers.push(data[2][0]);
+                    } else {
+                        this.roomData.consumers = [];
+                        this.roomData.consumers.push(data[2][0]);
+                    }
+                    if (this.roomData.consumers.length == 1) {
+                        this.roomData.useState = 1;
+                    } else {
+                        this.roomData.useState = 2;
+                    }
                 }
-                
+
                 //this.find();
-                this.meakCard(this.roomData);
+                this.meakCard(this.roomData, data[3]);
             }
             this.roomShow = false;
         },
         // 制作房卡
-        meakCard: function (da) {
+        meakCard: function (da, contractId) {
             this.roomData = da;
             RoomService.checkContractByRomm(da.roomId).then((res) => {
-                this.cardtimes[0] = res.contract.reserveStartDate.substring(0, 10);
-                this.cardtimes[1] = res.contract.reserveEndDate.substring(0, 10);
+                for (let k = 0; k < res.length; k++) {
+                    if (res[k].contract.contractId == contractId) {
+                        this.cardtimes[0] = res[k].contract.reserveStartDate;
+                        this.cardtimes[1] = res[k].contract.reserveEndDate;
+                    }
+                }
                 this.cardShow = true;
             });
         },
         markCardn: function () {
             this.cardShow = false;
+        },
+        // 状态点击
+        doing: function (da) {
+            this.roomData = da;
+            // if (da.useState == '0') {
+            //     this.$confirm('是否将该房间改为不可用?', '提示', {
+            //         confirmButtonText: '确定',
+            //         cancelButtonText: '取消',
+            //         type: 'warning'
+            //     }).then(async () => {
+            //         let data = {
+            //             roomId: da.roomId,
+            //             useState: 9
+            //         };
+            //         RoomService.updateRoom(data).then((res) => {
+            //             if (res.status == 0) {
+            //                 this.$message.success('该房间已不可入住！');
+            //                 this.roomData.useState = 9;
+            //             }
+            //         });
+            //     });
+            // } 
+            // else if (da.useState == '2') {
+            //     this.$confirm('是否将该房间改为可入住?', '提示', {
+            //         confirmButtonText: '确定',
+            //         cancelButtonText: '取消',
+            //         type: 'warning'
+            //     }).then(async () => {
+            //         let data = {
+            //             roomId: da.roomId,
+            //             useState: 0
+            //         };
+            //         RoomService.updateRoom(data).then((res) => {
+            //             if (res.status == 0) {
+            //                 this.$message.success('该房间可正常入住！');
+            //                 this.roomData.useState = 0;
+            //             }
+            //         });
+            //     });
+            // }
+        },
+        // 房间状态切换有2级
+        two(d){
+            this.roomData = d;
+            this.wdsShow = true;
+        },
+        twoleave(d){
+            this.roomDate = d;
+            let that = this;
+            setTimeout(()=>{
+                if(!this.enterDS){
+                    that.wdsShow = false;
+                }
+            },500)
+        },
+        // 
+        dsenter(){
+            this.enterDS=true;
+            this.wdsShow = true
+        },
+        dsleave(){
+            this.enterDS=false;
+            this.wdsShow = false;
+        },
+        //已打扫,维修中
+        okds(a,x){
+            this.roomData = a;
+            this.wdsShow = false;
+            this.enterDS=false;
+            if(x == 1){
+                this.$confirm('确定已打扫完毕?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    let data = {
+                        roomId: a.roomId,
+                        useState: 0
+                    };
+                    RoomService.updateRoom(data).then((res) => {
+                        if (res.status == 0) {
+                            this.$message.success('打扫完成！');
+                            this.roomData.useState = 0;
+                        }
+                    });
+                });
+            }else if(x == 2){
+                this.$confirm('确定将房间不可用?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    let data = {
+                        roomId: a.roomId,
+                        useState: 9
+                    };
+                    RoomService.updateRoom(data).then((res) => {
+                        if (res.status == 0) {
+                            this.$message.success('该房间不可用！');
+                            this.roomData.useState = 9;
+                        }
+                    });
+                });
+            }else if(x == 3){
+                this.$confirm('确定房间可正常使用?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    let data = {
+                        roomId: a.roomId,
+                        useState: 0
+                    };
+                    RoomService.updateRoom(data).then((res) => {
+                        if (res.status == 0) {
+                            this.$message.success('可正常入住！');
+                            this.roomData.useState = 0;
+                        }
+                    });
+                });
+            }else if(x == 4){
+                this.$confirm('确定房间可使用并待打扫?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    let data = {
+                        roomId: a.roomId,
+                        useState: 3
+                    };
+                    RoomService.updateRoom(data).then((res) => {
+                        if (res.status == 0) {
+                            this.$message.success('待打扫！');
+                            this.roomData.useState = 3;
+                        }
+                    });
+                });
+            }else if(x == 5){
+                this.$confirm('确定房间待打扫?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    let data = {
+                        roomId: a.roomId,
+                        useState: 3
+                    };
+                    RoomService.updateRoom(data).then((res) => {
+                        if (res.status == 0) {
+                            this.$message.success('待打扫！');
+                            this.roomData.useState = 3;
+                        }
+                    });
+                });
+            }else if(x == 6){
+                this.$confirm('确定房间不可用?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    let data = {
+                        roomId: a.roomId,
+                        useState: 9
+                    };
+                    RoomService.updateRoom(data).then((res) => {
+                        if (res.status == 0) {
+                            this.$message.success('该房间不可用！');
+                            this.roomData.useState = 9;
+                        }
+                    });
+                });
+            }
+            
         }
     }
 };
@@ -411,56 +754,107 @@ export default {
 <style scoped>
 .roomDiv {
     border: 1px solid #ddd;
-   padding:10px;
+    padding: 10px;
 }
-.roomTop{
-    height:44px;
-    background-image: url(../../../../assets/img/fan.png);
+.roomTop {
+    height: 44px;
     background-size: 100% 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding:0 20px;
-    color:#fff;
+    padding: 0 20px;
+    color: #fff;
 }
-.roomBot{
+.fan1 {
+    background-image: url(../../../../assets/img/fan1.png);
+}
+.fan2 {
+    background-image: url(../../../../assets/img/fan2.png);
+}
+.stateP {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-size: 14px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+}
+.stateFDiv{
+    position: absolute;
+    background: #fff;
+    z-index: 2222;
+    width: 62px;
+    top: 26px;
+    right: 0;
+    border-radius: 4px;
+    box-shadow: 0px 2px 10px 0px #C8D5E7;
+}
+.stateFDiv>p{
+    line-height: 36px;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+.stateFDiv>p:last-child{
+    border:none;
+}
+.stateP > img {
+    padding-left: 5px;
+}
+.s1 {
+    background: #21bb6d;
+}
+.s2 {
+    background: #ff8b41;
+}
+.s3 {
+    background: #a0a0a0;
+}
+.s4 {
+    background: #f05555;
+}
+.roomBot {
     display: flex;
     justify-content: space-around;
     color: #333;
 }
-.xian{
+.xian {
     width: 1px;
-    height: 100px;
+    height: 96px;
     background: #ddd;
 }
-.chuang{
-    flex:1;
+.chuang {
+    flex: 1;
 }
-.chuang>p{
+.chuang > p {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 8px;
 }
-.chuang>p>img{
+.chuang > p > img {
     margin-left: 5px;
 }
-.yajin{
+.yajin {
     height: 40px;
-    line-height:40px;
+    line-height: 40px;
     text-align: center;
 }
-.roomBtn{
+.roomBtn {
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
+    height: 25px;
 }
-.roomBtn>p{
+.roomBtn > p {
     color: #538add;
-    border:1px solid #538add;
+    border: 1px solid #538add;
     border-radius: 4px;
-    padding:2px 8px;
+    padding: 2px 8px;
     font-size: 14px;
+    cursor: pointer;
 }
 .ruzhu:hover {
     background: #538add;
@@ -474,7 +868,7 @@ export default {
     background: #19bc69;
     color: #fff;
 }
-.roomBtn>.tf {
+.roomBtn > .tf {
     color: #fe6931;
     border-color: #fe6931;
     cursor: pointer;
@@ -483,11 +877,11 @@ export default {
     background: #fe6931;
     color: #fff;
 }
-.yjIcon{
+.yjIcon {
     color: #fe6931;
     border-radius: 50%;
-    border:1px solid #fe6931;
-    padding:2px;
+    border: 1px solid #fe6931;
+    padding: 2px;
     font-size: 14px;
     cursor: pointer;
 }
@@ -567,5 +961,20 @@ export default {
 .tf:hover {
     background: #fe6931;
     color: #fff;
+}
+.wdsDiv {
+    height: 30px;
+    display: flex;
+    justify-content: flex-end;
+}
+.wdsDiv > p {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0 10px;
+    margin-top: 5px;
+    cursor: pointer;
+    font-size: 14px;
 }
 </style>

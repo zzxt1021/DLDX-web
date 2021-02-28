@@ -49,7 +49,7 @@
                         </div>
                         <div class="btns">
                             <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
-                            <el-button type="primary" icon="el-icon-refresh" @click="resetting">重置</el-button>
+                            <el-button type="primary" icon="el-icon-refresh" @click="resetting">清空查询</el-button>
                         </div>
                     </div>
                 </div>
@@ -167,7 +167,7 @@ export default {
             this.currentPage = 1;
             this.find();
         },
-        // 重置
+        // 清空查询
         resetting(){
             this.device = {'onlineState':'all'};
             this.currentPage = 1;

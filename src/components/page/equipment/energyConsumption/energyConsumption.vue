@@ -35,7 +35,7 @@
             </div>
             <div class="btns">
                 <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
-                 <el-button type="primary" icon="el-icon-refresh" @click="resetting">重置</el-button>
+                 <el-button type="primary" icon="el-icon-refresh" @click="resetting">清空查询</el-button>
             </div>
         </div>
         <div style="margin-top:15px">
@@ -140,7 +140,7 @@ export default {
             this.currentPage = 1;
             this.find();
         },
-        // 重置按钮
+        // 清空查询
         resetting(){
             this.times = [];
             this.times[1] =this.dateFormat("YYYY-mm-dd",new Date());

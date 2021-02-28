@@ -90,7 +90,7 @@ import roomChoice from '../orderManagement/roomChoice.vue';
 export default {
     components: { roomChoice },
     name: 'readCard',
-    props: ['funs', 'stime', 'etime', 'rid', 'rname', 'type'],
+    props: ['funs', 'stime', 'etime', 'rid', 'rname', 'type','contractId'],
     data() {
         return {
             dialogVisible: true,
@@ -102,7 +102,6 @@ export default {
             devNum: 0,
             devper: 0,
             consumers: null,
-            contractId: '', //订单id
             userName: '', // 使用人
             roomName: '', // 使用房间
             cRoom: false,
@@ -126,9 +125,8 @@ export default {
                 }
             });
             // 查询该订单下的入住人
-            RoomService.checkContractByRomm(this.rid).then((res) => {
-                this.consumers = res.consumerList;
-                this.contractId = res.contract.contractId;
+            RoomService.checkContract(this.contractId).then((res) => {
+                        this.consumers = res.consumerList;
             });
         }
     },
@@ -283,13 +281,6 @@ export default {
 
                     if (res.status == 0) {
                         this.jishu();
-                        // this.devNum++;
-                        // console.log(this.devNum);
-                        // this.devper = parseInt((this.devNum / this.devList.length) * 100);
-                        // if (this.devper == 100) {
-                        //     this.$message.success('已生成！');
-                        //     this.$emit('funs', 'ok');
-                        // }
                     }
                 })
                 .catch((err) => {
@@ -331,8 +322,8 @@ export default {
                         st = '0000-00-00 00:00';
                         et = '0000-00-00 00:00';
                     } else {
-                        st = this.dateFormat('YYYY-mm-dd', new Date(this.stime)) + ' 00:00';
-                        et = this.dateFormat('YYYY-mm-dd', new Date(this.etime)) + ' 15:00';
+                        st = this.stime.substring(0,16);
+                        et = this.etime.substring(0,16);;
                     }
                     const bdata = await EquipmentService.updateDevice({
                         deviceId: this.did,
@@ -354,15 +345,17 @@ export default {
                         let wid = msg.data.data;
                         EquipmentService.cardWithDevice({
                             cardId: this.writeVal,
+                            //cardId:'00042000',
                             deviceId: this.did,
                             roomId: this.rid,
                             roomName: this.rname,
                             lockUser: wid,
-                            startTime: st + ':00',
-                            endTime: et + ':00'
+                            startTime: this.stime,
+                            endTime: this.etime
                         }).then(() => {});
                         EquipmentService.cardInfo({
                             cardId: this.writeVal,
+                            //cardId:'00042000',
                             type: 'k',
                             usedUser: this.consumers[0].consumerName,
                             contractId: this.contractId,

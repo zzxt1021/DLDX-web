@@ -56,7 +56,7 @@
                 </div>
                 <div class="btns">
                     <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
-                    <el-button type="primary" icon="el-icon-refresh" @click="resetting">重置</el-button>
+                    <el-button type="primary" icon="el-icon-refresh" @click="resetting">清空查询</el-button>
                 </div>
             </div>
             <div style="margin-top: 15px">
@@ -65,24 +65,25 @@
                         <el-table-column type="index" width="80" align="center"></el-table-column>
                         <el-table-column label="订单时间" align="center">
                             <template slot-scope="scope">
-                                <span v-if="scope.row.contract.reserveStartDate">{{scope.row.contract.reserveStartDate.substring(0,10)}} 至
-                                {{scope.row.contract.reserveEndDate.substring(0,10)}}</span>
-                                
+                                <span v-if="scope.row.contract.reserveStartDate"
+                                    >{{ scope.row.contract.reserveStartDate.substring(0, 10) }} 至
+                                    {{ scope.row.contract.reserveEndDate.substring(0, 10) }}</span
+                                >
                             </template>
                         </el-table-column>
                         <el-table-column label="订单人" align="center">
                             <template slot-scope="scope">
-                                <span v-for="(cn,k) in scope.row.consumerList" :key="cn.consumerNo">
-                                    {{cn.consumerName}}
-                                    <span v-if="k!=(scope.row.consumerList.length-1)">,</span>
+                                <span v-for="(cn, k) in scope.row.consumerList" :key="cn.consumerNo">
+                                    {{ cn.consumerName }}
+                                    <span v-if="k != scope.row.consumerList.length - 1">,</span>
                                 </span>
                             </template>
                         </el-table-column>
                         <el-table-column label="订单人电话" align="center">
-                            <template  slot-scope="scope">
-                                <span v-for="(cn,k) in scope.row.consumerList" :key="cn.consumerNo">
-                                    {{cn.consumerTel}}
-                                    <span v-if="k!=(scope.row.consumerList.length-1)">,</span>
+                            <template slot-scope="scope">
+                                <span v-for="(cn, k) in scope.row.consumerList" :key="cn.consumerNo">
+                                    {{ cn.consumerTel }}
+                                    <span v-if="k != scope.row.consumerList.length - 1">,</span>
                                 </span>
                             </template>
                         </el-table-column>
@@ -90,14 +91,23 @@
                         <el-table-column label="房间位置" align="center">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.roomDto.buildingType1Name }}</span>
-                                <span v-if="scope.row.roomDto.buildingType2Name">&nbsp;-&nbsp;{{ scope.row.roomDto.buildingType2Name }}</span>
-                                <span v-if="scope.row.roomDto.buildingType3Name">&nbsp;-&nbsp;{{ scope.row.roomDto.buildingType3Name }}</span>
+                                <span v-if="scope.row.roomDto.buildingType2Name"
+                                    >&nbsp;-&nbsp;{{ scope.row.roomDto.buildingType2Name }}</span
+                                >
+                                <span v-if="scope.row.roomDto.buildingType3Name"
+                                    >&nbsp;-&nbsp;{{ scope.row.roomDto.buildingType3Name }}</span
+                                >
                             </template>
                         </el-table-column>
                         <el-table-column label="房间类型" align="center">
                             <template slot-scope="scope">
                                 <span v-if="scope.row.roomDto.roomType == '20-01'">标准间</span>
                                 <span v-if="scope.row.roomDto.roomType == '20-02'">大床房</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="押金" align="center" width="100">
+                            <template slot-scope="scope">
+                                <p>{{ scope.row.deposit ? scope.row.deposit : 0 }}</p>
                             </template>
                         </el-table-column>
                         <el-table-column label="订单状态" align="center">
@@ -112,11 +122,40 @@
                         <el-table-column label="操作" width="155" align="center">
                             <template slot-scope="scope">
                                 <!-- <el-button type="text" size="small" @click="checkOrder(scope.row)">查看</el-button> -->
-                                <el-button type="text" size="small"  v-if="scope.row.contract.contractState == '5' || scope.row.contract.contractState == '4'">-</el-button>
-                                <el-button type="text" size="small" @click="doRoom(scope.row)" v-if="scope.row.contract.contractState == '2' || scope.row.contract.contractState == '3'">入住</el-button>
-                                <el-button type="text" size="small" @click="markCard(scope.row)" v-if="scope.row.contract.contractState == '1'">制卡</el-button>
-                                <el-button type="text" size="small" @click="editRoom(scope.row)" v-if="!(scope.row.contract.contractState == '4' || scope.row.contract.contractState == '5')">编辑</el-button>
-                                <el-button type="text" size="small" @click="cancelRoom(scope.row)" v-if="scope.row.contract.contractState == '2' || scope.row.contract.contractState == '3'">取消</el-button>
+                                <el-button
+                                    type="text"
+                                    size="small"
+                                    v-if="scope.row.contract.contractState == '5' || scope.row.contract.contractState == '4'"
+                                    >-</el-button
+                                >
+                                <el-button
+                                    type="text"
+                                    size="small"
+                                    @click="doRoom(scope.row)"
+                                    v-if="scope.row.contract.contractState == '2' || scope.row.contract.contractState == '3'"
+                                    >入住</el-button
+                                >
+                                <el-button
+                                    type="text"
+                                    size="small"
+                                    @click="markCard(scope.row)"
+                                    v-if="scope.row.contract.contractState == '1'"
+                                    >制卡</el-button
+                                >
+                                <el-button
+                                    type="text"
+                                    size="small"
+                                    @click="editRoom(scope.row)"
+                                    v-if="!(scope.row.contract.contractState == '4' || scope.row.contract.contractState == '5')"
+                                    >编辑</el-button
+                                >
+                                <el-button
+                                    type="text"
+                                    size="small"
+                                    @click="cancelRoom(scope.row)"
+                                    v-if="scope.row.contract.contractState == '2' || scope.row.contract.contractState == '3'"
+                                    >取消</el-button
+                                >
                             </template>
                         </el-table-column>
                     </el-table>
@@ -135,7 +174,15 @@
                 </el-pagination>
             </div>
         </div>
-        <readCard v-if="doShow" @funs="readCardn" :stime="checkData.contract.reserveStartDate.substring(0,10)" :etime="checkData.contract.reserveEndDate.substring(0,10)" :rid="checkData.roomDto.roomId" :rname="checkData.roomDto.roomName"></readCard>
+        <readCard
+            v-if="doShow"
+            @funs="readCardn"
+            :stime="checkData.contract.reserveStartDate.substring(0, 10)"
+            :etime="checkData.contract.reserveEndDate.substring(0, 10)"
+            :rid="checkData.roomDto.roomId"
+            :rname="checkData.roomDto.roomName"
+            :contractId="checkData.contract.contractId"
+        ></readCard>
         <editOrder v-if="editShow" @funx="closeE" :oData="orderData"></editOrder>
     </div>
 </template>
@@ -147,35 +194,35 @@ import readCard from '../checkIn/readCard';
 import editOrder from './editOrder';
 export default {
     name: 'orderManagement',
-    components:{
+    components: {
         roomDetails,
         readCard,
         editOrder
     },
     data() {
         return {
-            contract:{},// 订单查询
-            consumer:{},// 订单查询
-            room:{},// 订单查询
+            contract: {}, // 订单查询
+            consumer: {}, // 订单查询
+            room: {}, // 订单查询
             orderStatusList: [
                 { value: '', label: '全部' },
                 { value: '1', label: '已入住' },
                 { value: '2', label: '单人预定' },
                 { value: '3', label: '集体预定' },
                 { value: '4', label: '已完结' },
-                { value: '5', label: '已取消' },
+                { value: '5', label: '已取消' }
             ],
-            times: [],//订单时间
+            times: [], //订单时间
             loading: false,
             currentPage: 1,
             pageSize: 15,
             total: 0,
-            tableData:[],
-            roomTypeList:[],
-            doShow:false,
-            checkData:{},
-            editShow:false,//编辑界面
-            orderData:{},
+            tableData: [],
+            roomTypeList: [],
+            doShow: false,
+            checkData: {},
+            editShow: false, //编辑界面
+            orderData: {}
         };
     },
     mounted() {
@@ -185,33 +232,33 @@ export default {
         });
         this.find();
     },
-    methods:{
+    methods: {
         // 格式化时间
         dateFormat(fmt, date) {
             let ret;
             const opt = {
-                "Y+": date.getFullYear().toString(),        // 年
-                "m+": (date.getMonth() + 1).toString(),     // 月
-                "d+": date.getDate().toString(),            // 日
-                "H+": date.getHours().toString(),           // 时
-                "M+": date.getMinutes().toString(),         // 分
-                "S+": date.getSeconds().toString()          // 秒
+                'Y+': date.getFullYear().toString(), // 年
+                'm+': (date.getMonth() + 1).toString(), // 月
+                'd+': date.getDate().toString(), // 日
+                'H+': date.getHours().toString(), // 时
+                'M+': date.getMinutes().toString(), // 分
+                'S+': date.getSeconds().toString() // 秒
             };
             for (let k in opt) {
-                ret = new RegExp("(" + k + ")").exec(fmt);
+                ret = new RegExp('(' + k + ')').exec(fmt);
                 if (ret) {
-                    fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
-                };
-            };
+                    fmt = fmt.replace(ret[1], ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, '0'));
+                }
+            }
             return fmt;
         },
         // 查询按钮
-        findAll(){
+        findAll() {
             this.currentPage = 1;
             this.find();
         },
-        // 重置按钮
-        resetting(){
+        // 清空查询按钮
+        resetting() {
             this.times = [];
             this.currentPage = 1;
             this.contract = {};
@@ -219,24 +266,24 @@ export default {
             this.room = {};
             this.find();
         },
-        find(){
+        find() {
             this.loading = true;
-            if(this.times && this.times.length>0){
-                this.contract.reserveStartDate =this.dateFormat("YYYY-mm-dd",new Date(this.times[0])) ;
-                this.contract.reserveEndDate =this.dateFormat("YYYY-mm-dd",new Date(this.times[1])) ;
-            }else{
+            if (this.times && this.times.length > 0) {
+                this.contract.reserveStartDate = this.dateFormat('YYYY-mm-dd', new Date(this.times[0]));
+                this.contract.reserveEndDate = this.dateFormat('YYYY-mm-dd', new Date(this.times[1]));
+            } else {
                 this.contract.reserveStartDate = '';
                 this.contract.reserveEndDate = '';
             }
             let page = {
-                'curPage':this.currentPage,
-                'pageSize':this.pageSize,
-            }
-            RoomService.getOrderList({'page':page,'contract':this.contract,'consumer':this.consumer,'room':this.room}).then((res)=>{
+                curPage: this.currentPage,
+                pageSize: this.pageSize
+            };
+            RoomService.getOrderList({ page: page, contract: this.contract, consumer: this.consumer, room: this.room }).then((res) => {
                 this.loading = false;
                 this.tableData = res.dataList;
                 this.total = res.total;
-            })
+            });
         },
         // 每页数改变
         handleSizeChange: function (pg) {
@@ -253,64 +300,69 @@ export default {
             return { background: '#427FDA !important', color: '#fff !important' };
         },
         // 办理
-        doRoom(d){
+        doRoom(d) {
             this.checkData = d;
             let dtt1 = new Date().getTime();
-            let dtt2 = new Date(this.checkData.contract.reserveStartDate.substring(0,10)).getTime();
-            if(dtt1 <dtt2){
+            let dtt2 = new Date(this.checkData.contract.reserveStartDate.substring(0, 10)).getTime();
+            if (dtt1 < dtt2) {
                 this.$message.warning('未到预定时间不可办理入住！');
-                return
+                return;
             }
             this.doShow = true;
         },
-        readCardn(val){
+        readCardn(val) {
             this.doShow = false;
-            if(val != 'close'){
-                RoomService.checkInRoom({'contractId':this.checkData.contract.contractId}).then((res)=>{
-                    if(res.r == '0'){
+            if (val != 'close') {
+                RoomService.checkInRoom({ contractId: this.checkData.contract.contractId }).then((res) => {
+                    if (res.r == '0') {
                         this.$message.success('入住成功！');
                         this.find();
                     }
-                })
+                });
             }
         },
         // 取消订单
-        cancelRoom(d){
+        cancelRoom(d) {
             this.$confirm('是否确定取消该订单?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                RoomService.editOrder({'contract':{'contractId':d.contract.contractId,'contractState':5,'reserveEndDate': d.contract.reserveEndDate.substring(0,10) ,'reserveStartDate':d.contract.reserveStartDate.substring(0,10),'roomId':d.roomDto.roomId}}).then((res)=>{
-                    if(res.status == 0){
+                RoomService.editOrder({
+                    contract: {
+                        contractId: d.contract.contractId,
+                        contractState: 5,
+                        reserveEndDate: d.contract.reserveEndDate.substring(0, 10),
+                        reserveStartDate: d.contract.reserveStartDate.substring(0, 10),
+                        roomId: d.roomDto.roomId
+                    }
+                }).then((res) => {
+                    if (res.status == 0) {
                         this.$message.success('订单取消成功！');
                         this.find();
                     }
-                })
-            })
+                });
+            });
         },
         // 编辑订单
-        editRoom(d){
+        editRoom(d) {
             this.orderData = d;
             this.editShow = true;
         },
         //关闭编辑
-        closeE(d){
-            if(d!='close'){
+        closeE(d) {
+            if (d != 'close') {
                 this.find();
             }
             this.editShow = false;
-
         },
         // 制卡
-        markCard(d){
+        markCard(d) {
             this.doShow = true;
             this.checkData = d;
         },
         // 查看
-        checkOrder(){
-
-        }
+        checkOrder() {}
     }
 };
 </script> 

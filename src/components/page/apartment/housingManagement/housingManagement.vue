@@ -41,7 +41,7 @@
                         </div>
                         <div class="btns">
                             <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
-                            <el-button type="primary" icon="el-icon-refresh" @click="resetting">重置</el-button>
+                            <el-button type="primary" icon="el-icon-refresh" @click="resetting">清空查询</el-button>
                             <el-button type="primary" icon="el-icon-circle-plus-outline" @click="add(2)">新增房间</el-button>
                         </div>
                     </div>
@@ -135,7 +135,7 @@ export default {
             this.currentPage = 1;
             this.find();
         },
-        // 重置按钮
+        // 清空查询按钮
         resetting(){
             this.roomName = '';
             this.currentPage = 1;

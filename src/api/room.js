@@ -25,6 +25,10 @@ export const RoomService = {
     editRoom(data){
       return request.sendPost('/base/room/add',data);
     },
+    // 修改房间
+    updateRoom(data){
+      return request.sendPost('/base/room/edit',data);
+    },
    
     // 删除房间
     delRoom(data){
@@ -64,6 +68,10 @@ export const RoomService = {
     checkOutRoom(id){
       return request.sendPost('/room/contract/checkout/'+id);
     },
+    // 按床退房
+    checkOutRoomBad(roomid,contractId){
+      return request.sendPost('/room/contract/checkout/'+roomid+'/'+contractId);
+    },
     //修改订单
     editOrder(data){
       return request.sendPost('/room/contract/edit',data);
@@ -71,6 +79,10 @@ export const RoomService = {
     //根据房间id查询订单
     checkContractByRomm(id){
       return request.sendGet('/room/contract/current/'+id);
+    },
+    //根据订单id查询订单信息
+    checkContract(id){
+      return request.sendGet('/room/contract/'+id);
     },
 
     //房间状态数量

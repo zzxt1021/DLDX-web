@@ -7,17 +7,28 @@
                 </div>
                 <el-form label-width="120px">
                     <el-form-item label="入租人">
-                        <el-row style="margin-bottom: 10px">
+                        <el-row style="margin-bottom: 10px" v-for="(c,x) in consumerList" :key="x">
                             <el-col :span="6" class="czr">
-                                <el-input v-model="consumer['consumerName']" placeholder="请填写入住人姓名" disabled></el-input>
+                                <el-input v-model="c['consumerName']" placeholder="请填写入住人姓名" disabled></el-input>
                             </el-col>
                             <el-col :span="12" :offset="1">
-                                <el-input v-model="consumer['consumerNo']" placeholder="请填写入住人身份证" disabled></el-input>
+                                <el-input v-model="c['consumerNo']" placeholder="请填写入住人身份证" disabled></el-input>
+                            </el-col>
+                            <el-col :span="4" :offset="1">
+                                <el-radio-group v-model="c.consumerSex" size="medium" disabled>
+                                    <el-radio-button label="男"></el-radio-button>
+                                    <el-radio-button label="女"></el-radio-button>
+                                </el-radio-group>
                             </el-col>
                         </el-row>
                     </el-form-item>
                     <el-form-item label="预留手机号">
-                        <el-input v-model="consumer.consumerTel" placeholder="请填写入住人手机号" disabled></el-input>
+                        <el-row>
+                            <el-col :span="6" v-for="(c,x) in consumerList" :key="x">
+                                <el-input v-model="c.consumerTel" placeholder="请填写入住人手机号" disabled></el-input>
+                            </el-col>
+                        </el-row>
+                        
                     </el-form-item>
                     <el-form-item label="房间类型">
                         <div class="timeDiv">
@@ -40,20 +51,22 @@
                                     class="date"
                                     v-model="times[1]"
                                     :picker-options="endDatePicker"
-                                    type="date"
-                                    value-format="yyyy-MM-dd"
+                                    type="datetime"
                                     placeholder="结束时间"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :default-time="['15:00:00']"
                                 >
                                 </el-date-picker>
                             </div>
                             <div v-if="contractState == 2 || contractState == 3">
                                 <el-date-picker
                                     v-model="times"
-                                    type="daterange"
+                                    type="datetimerange"
                                     range-separator="至"
                                     start-placeholder="开始日期"
                                     end-placeholder="结束日期"
                                     :picker-options="isDisabled"
+                                    :default-time="['00:00:00','15:00:00']"
                                 >
                                 </el-date-picker>
                             </div>
@@ -61,6 +74,12 @@
                                 <el-input v-model="days" :disabled="true"></el-input>
                                 <span style="padding-left: 10px">天</span>
                             </div>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="押金">
+                        <div class="timeDiv">
+                            <el-input v-model="oData.deposit" disabled style="width:220px"></el-input>
+                            <span style="padding-left: 10px">元</span>
                         </div>
                     </el-form-item>
                     <el-form-item label="备注">
@@ -97,7 +116,7 @@ export default {
     data() {
         return {
             dialogVisible: true,
-            consumer: {},
+            consumerList: {},
             roomType: '',
             times: '',
             etime: '',
@@ -116,14 +135,10 @@ export default {
         };
     },
     created() {
-        this.consumer = {
-            consumerName: this.oData.contract.consumerName,
-            consumerNo: this.oData.contract.consumerNo,
-            consumerTel: this.oData.contract.consumerTel
-        };
+        this.consumerList =  this.oData.consumerList;
         this.roomType = this.oData.roomDto.roomType;
-        this.times = [this.oData.contract.reserveStartDate.substring(0, 10), this.oData.contract.reserveEndDate.substring(0, 10)];
-        this.etime = this.oData.contract.reserveEndDate.substring(0, 10);
+        this.times = [this.oData.contract.reserveStartDate, this.oData.contract.reserveEndDate];
+        this.etime = this.oData.contract.reserveEndDate;
         this.remark = this.oData.contract.remark;
         this.contractState = this.oData.contract.contractState;
         this.roomName = this.oData.roomDto.roomName;

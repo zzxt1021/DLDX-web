@@ -9,19 +9,25 @@
                     <el-form-item label="入住人">
                         <el-row v-for="(value, i) in consumerList" :key="i" style="margin-bottom: 10px">
                             <el-col :span="6" class="czr">
-                                <el-input v-model="value['consumerName']" placeholder="请填写入住人姓名"></el-input>
+                                <el-input v-model="value['consumerName']" placeholder="请填写入住人姓名" ></el-input>
                             </el-col>
                             <el-col :span="12" :offset="1">
-                                <el-input v-model="value['consumerNo']" placeholder="请填写入住人身份证"></el-input>
+                                <el-input v-model="value['consumerNo']" placeholder="请填写入住人身份证" ></el-input>
                             </el-col>
-                            <el-col :span="4" :offset="1">
+                            <el-col :span="4">
+                                <p class="hzr" style="margin-left:10px" @click="ReadIDCard">读取证件</p>
+                            </el-col>
+                            <object id="CertCtl" classid="clsid:30516390-004F-40B9-9FC6-C9096B59262E" type="application/cert-reader"  style="height: 20px;width:20px"></object>
+
+                            <!-- <object id="CertCtl" TYPE="application/cert-reader" width="0" height="0"></object> -->
+                            <!-- <el-col :span="4" :offset="1">
                                 <p class="addBtn delBtn" @click="delConsumer(i)">
                                     <img src="../../../../assets/img/delred.png" />
                                     <span>删除</span>
                                 </p>
-                            </el-col>
+                            </el-col> -->
                         </el-row>
-                        <el-row  v-if="consumerList.length<2">
+                        <!-- <el-row  v-if="consumerList.length<2">
                             <el-col :span="10">
                                 <div class="addczr">
                                     <p style="height: 20px">
@@ -30,14 +36,28 @@
                                     <p class="hzr" @click="addConsumer">添加入住人</p>
                                 </div>
                             </el-col>
-                        </el-row>
+                        </el-row> -->
                     </el-form-item>
-                    <el-form-item label="预留手机号">
-                        <div v-for="(cn,k) in consumerList" :key="k">
-                             <el-input v-model="cn.consumerTel" placeholder="请填写入住人手机号" style="margin-bottom:10px"></el-input>
-                        </div>
-                       
-                    </el-form-item>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="预留手机号">
+                                <div v-for="(cn,k) in consumerList" :key="k">
+                                    <el-input v-model="cn.consumerTel" placeholder="请填写入住人手机号" style="margin-bottom:10px"></el-input>
+                                </div>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="性别">
+                                <div v-for="(cn,k) in consumerList" :key="k" style="width:100%">
+                                    <el-radio-group v-model="cn.consumerSex" size="medium" >
+                                        <el-radio-button label="男"></el-radio-button>
+                                        <el-radio-button label="女"></el-radio-button>
+                                    </el-radio-group>
+                                </div>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    
                     <el-form-item label="收费标准" prop="fees">
                         <div class="detailTable">
                             <div class="detailTablehd">
@@ -62,11 +82,12 @@
                             <div>
                                 <el-date-picker
                                     v-model="times"
-                                    type="daterange"
+                                    type="datetimerange"
                                     range-separator="至"
                                     start-placeholder="开始日期"
                                     end-placeholder="结束日期"
                                     :picker-options="isDisabled"
+                                    :default-time="['00:00:00','15:00:00']"
                                 >
                                 </el-date-picker>
                             </div>
@@ -76,9 +97,21 @@
                             </div>
                         </div>
                     </el-form-item>
+                    <el-form-item label="房间选择" prop="rid" v-if="rtype == 2">
+                        <div style="display:flex">
+                            <p style="padding-right:20px">{{roomName}}房间</p>
+                            <p class="hzr" @click="choiceRoom">点击选择房间</p>
+                        </div>
+                    </el-form-item>
                     <el-form-item label="预收参考" prop="">
                         <div class="yushouDiv">
                             <el-input v-model="yushou" :disabled="true" placeholder="房费+押金"></el-input>
+                            <span style="padding-left: 10px">元</span>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="实收押金" prop="">
+                        <div class="yushouDiv">
+                            <el-input v-model="deposit"></el-input>
                             <span style="padding-left: 10px">元</span>
                         </div>
                     </el-form-item>
@@ -106,23 +139,23 @@
                 </el-footer>
             </el-container>
         </el-dialog>
-        <readCard v-if="carss" @funs="readCardn" :stime="times[0]" :etime="times[1]" :rname="roomData.roomName" :rid="roomData.roomId" :consumers="consumerList"></readCard>
+        <roomChoice v-if="rcShow" :hasCheck="false" :reservetime="times" @func="closeChoice"></roomChoice>
     </div>
 </template>
 <script>
 import { RoomService } from '../../../../api/room';
 import { SystemService } from '../../../../api/system';
 import { EquipmentService } from '../../../../api/equipment';
-import readCard from './readCard';
+import roomChoice from '../orderManagement/roomChoice.vue';
 export default {
     name: 'roomDetails',
     props: ['func', 'roomData', 'rtype'],
-    components: {
-        readCard
+    components:{
+        roomChoice
     },
     data() {
         return {
-            consumerList:[{}],// 入住人数组
+            consumerList:[{consumerSex:'男'}],// 入住人数组
             moneychecked: {}, //选中的收费标准
             times: [], // 入住时间
             days: 0, //入住天数
@@ -131,13 +164,9 @@ export default {
             consumerTel: '', // 预留电话
             yushou: '', // 预收参考
             dialogVisible: true,
-            cardType: 1, //默认门锁卡
-            tableData: [], //房间预约、入住信息
-            loading: false,
             remark: '', //备注
-            carss: false, //读取卡是否显示
-            cardSuccess: false,
             did: '', // 门锁id
+            deposit:'',// 押金
             isDisabled: {
                 disabledDate(time) {
                     // 设置日期限制 小于某个日期不能选择
@@ -151,7 +180,9 @@ export default {
                         return time.getTime() <= new Date().getTime() - 8.64e7 ;
                     }
                 }
-            }
+            },
+            rcShow:false,
+            roomName:'',
         };
     },
     mounted() {
@@ -171,7 +202,7 @@ export default {
         },
         // 添加入住人
         addConsumer() {
-            this.consumerList.push({});
+            this.consumerList.push({consumerSex:'男'});
         },
         // 选择收费标准
         checkMoney(d, i) {
@@ -199,6 +230,49 @@ export default {
                 }
             }
             return fmt;
+        },
+        // 选择房间
+        choiceRoom:function(){
+            if(this.times.length!=2){
+                this.$message.warning('请选择入住时间！');
+                return
+            }
+            this.rcShow = true;
+        },
+        // 关闭选择
+        closeChoice:function(da){
+            this.rcShow = false;
+            if(da!='close'){
+                this.roomName = da.roomName;
+                this.roomData={roomId:da.roomId};
+            }
+        },
+        // 读取身份证
+        ReadIDCard:function(){
+            console.log('测试身份证dddd');
+            var ret = CertCtl.connect();
+            var conn = JSON.parse(ret);
+            if(conn.resultFlag != 0){
+                this.$message.warning("连接失败:"+conn.errorMsg);
+            }
+            ret = CertCtl.readCert();
+        
+            var cert  = JSON.parse(ret);
+            if(cert.resultFlag != 0){
+                this.$message.warning("readCert失败:"+cert.errorMsg);
+            }else{
+                this.$message.success("读卡成功");
+                console.log(cert.resultContent);
+                this.consumerList[0].consumerNo = cert.resultContent.certNumber;
+                this.consumerList[0].consumerName = cert.resultContent.partyName;
+                this.consumerList[0].consumerSex = cert.resultContent.gender == 1?'男':'女';
+                this.$forceUpdate();
+            }
+            ret = CertCtl.disconnect();
+            var disConn = JSON.parse(ret);
+            if(disConn.resultFlag != 0){
+                this.$message.warning("disconnect失败:"+disConn.errorMsg);
+            }
         },
         // 保存
         save: function () {
@@ -232,16 +306,20 @@ export default {
                     }
                 }
             }
+            if(!this.roomData && this.roomData.roomId){
+                this.$message.warning("请选择房间！");
+                return;
+            }
             let checkInTime = new Date(this.times[0]);
             let checkOutTime = new Date(this.times[1]);
-            let ntime = this.dateFormat('YYYY-mm-dd', new Date());
-            let ctime = this.dateFormat('YYYY-mm-dd', checkInTime);
 
             let contract = {
                 roomId: this.roomData.roomId,
-                reserveStartDate: this.dateFormat('YYYY-mm-dd', checkInTime),
-                reserveEndDate: this.dateFormat('YYYY-mm-dd', checkOutTime),
-                remark: this.remark
+                reserveStartDate: this.dateFormat('YYYY-mm-dd HH:MM:SS', checkInTime),
+                reserveEndDate: this.dateFormat('YYYY-mm-dd HH:MM:SS', checkOutTime),
+                remark: this.remark,
+                deposit:this.deposit,
+                contractType:2
             };
             if (this.rtype == 1) {
                 contract.contractState = 1;
@@ -253,7 +331,7 @@ export default {
                 if (res.status == 0) {
                     this.$message.success('办理成功！');
                     if(contract.contractState == 1){
-                         this.markSuccess();
+                         this.markSuccess(res.data.contractId);
                     }else{
                         this.$emit('func', 'ok',2);
                     }
@@ -263,17 +341,23 @@ export default {
             });
         },
         // 办理成功后，是否绑定卡
-        markSuccess:function(){
+        markSuccess:function(contractId){
             this.$confirm('是否绑定门卡?', '提示', {
                 confirmButtonText: '绑定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(()=>{
                 this.dialogVisible = false;
-                this.$emit('func', 'okcard',1,this.consumerList);
+                for(let v=0;v<this.consumerList.length;v++){
+                    this.consumerList[v].deposit = this.deposit;
+                }
+                this.$emit('func', 'okcard',1,this.consumerList,contractId);
             }).catch(()=>{
                 this.dialogVisible = false;
-                this.$emit('func', 'ok',1,this.consumerList);
+                for(let v=0;v<this.consumerList.length;v++){
+                    this.consumerList[v].deposit = this.deposit;
+                }
+                this.$emit('func', 'ok',1,this.consumerList,contractId);
             })
         },
         //取消

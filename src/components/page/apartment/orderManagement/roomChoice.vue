@@ -35,7 +35,7 @@
                                         start-placeholder="预定开始日期"
                                         end-placeholder="预定结束日期"
                                         prefix-icon=""
-                                        :picker-options="isDisabled"
+                                        disabled
                                     >
                                     </el-date-picker>
                                 </div>
@@ -46,12 +46,12 @@
                                 <p>只查工作间</p>
                             </div>
                         </div>
-                        <div class="btns">
+                        <div class="btns" >
                             <el-button type="primary" icon="el-icon-search" @click="find">查询</el-button>
                         </div>
                     </div>
                 </div>
-                <div class="qchoice">
+                <div class="qchoice" v-if="hasCheck">
                     <div @click="bhShow?allChoicebh():allChoice()">
                         <img src="../../../../assets/img/radio.png" v-if="!allS"/>
                         <img src="../../../../assets/img/radioed.png" v-if="allS"/>
@@ -65,7 +65,7 @@
                             <el-col :span="4" style="margin-top: 10px" v-for="(a, b) in v" :key="b">
                                 <el-card shadow="hover" class="roomDiv"  :class="{'roomAct':!hasCheck && a.roomId == croom.roomId}">
                                     <div @click="choice(a)" class="roomDS">
-                                        <div>
+                                        <div class="xk" v-if="hasCheck">
                                             <img src="../../../../assets/img/checkk.png" v-if="roomIds.indexOf(a.roomId)<0"/>
                                             <img src="../../../../assets/img/checkked.png" v-if="roomIds.indexOf(a.roomId)>-1"/>
                                         </div>
@@ -88,7 +88,7 @@
                             <el-col :span="4" style="margin-top: 10px" v-for="(a, b) in v" :key="b">
                                 <el-card shadow="hover" class="roomDiv"  :class="{'roomAct':!hasCheck && a.roomId == croom.roomId}">
                                     <div @click="choicebh(a)" class="roomDS">
-                                        <div>
+                                        <div class="xk" v-if="hasCheck">
                                             <img src="../../../../assets/img/checkk.png" v-if="gzjroomIds.indexOf(a.roomId)<0"/>
                                             <img src="../../../../assets/img/checkked.png" v-if="gzjroomIds.indexOf(a.roomId)>-1"/>
                                         </div>
@@ -130,13 +130,13 @@ import { SystemService } from '../../../../api/system';
 import {RoomService} from '../../../../api/room';
 export default {
     name: 'roomChoicce',
-    props: ['func','hasCheck','roomIdss','roomName'],
+    props: ['func','hasCheck','roomIdss','roomName','reservetime'],
     data() {
         return {
             dialogVisible: true,
             bdTree: [],
             buildTypeId: ['0', '0_0'],
-            times: [],
+            times: this.reservetime,
             filterData: {
                 areaId: 'a01',
                 roomName: '', // 筛选：房间名称
@@ -352,8 +352,9 @@ export default {
 .roomDS{
     display: flex;
     align-items: center;
+    justify-content: space-around;
 }
-.roomDS>div:first-child{
+.roomDS>.xk{
     margin-right: 10%;
     margin-left: 10%;
 }
