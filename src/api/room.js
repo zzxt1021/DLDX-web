@@ -89,4 +89,8 @@ export const RoomService = {
     getRoomStatus(){
       return request.sendGet('/base/room/status');
     },
+    //批量房间状态修改
+    editRoomStatus(data){
+      return request.sendPost('/base/room/edits/state',data);
+    }
 }

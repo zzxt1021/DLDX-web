@@ -224,13 +224,15 @@ export default {
                 this.jishu();
             });
         },
-        cardInfo(rid) {
+        cardInfo(rid,rname) {
             EquipmentService.cardInfo({
                 cardId: this.writeVal,
                 //cardId: 'E995D194',
                 type: 'g',
                 usedUser: this.userName,
-                mark: this.mark
+                mark: this.mark,
+                usedRoomId:rid,
+                usedRoomName:rname,
             }).then(() => {
                 this.jishu();
             });
@@ -268,7 +270,7 @@ export default {
                     if (msg.data.success == true) {
                         let wid = msg.data.data;
                         this.cardWithDevice(did, rid, rname, wid);
-                        this.cardInfo(rid);
+                        this.cardInfo(rid,rname);
                         // this.upName(did, wid);
                     } else if (msg.data.success == false && (msg.data.errorCode == -515 ||msg.data.errorCode == 515)) {
                         this.$message.success('该门卡已绑定房间设备！');
@@ -334,7 +336,7 @@ export default {
                             hijack: false,
                             weekDay: [0, 1, 2, 3, 4, 5, 6],
                             key: this.writeVal,
-                            //key: '00042000',
+                            key: '00242000',
                             openTimes: 0,
                             startTime: st,
                             endTime: et
@@ -345,7 +347,7 @@ export default {
                         let wid = msg.data.data;
                         EquipmentService.cardWithDevice({
                             cardId: this.writeVal,
-                            //cardId:'00042000',
+                            //cardId:'00242000',
                             deviceId: this.did,
                             roomId: this.rid,
                             roomName: this.rname,
@@ -355,12 +357,13 @@ export default {
                         }).then(() => {});
                         EquipmentService.cardInfo({
                             cardId: this.writeVal,
-                            //cardId:'00042000',
+                            //cardId:'00242000',
                             type: 'k',
                             usedUser: this.consumers[0].consumerName,
                             contractId: this.contractId,
                             usedRoomId: this.rid,
-                            mark: this.mark
+                            mark: this.mark,
+                            usedRoomName:this.rname,
                         }).then(() => {});
                         this.$message.success('绑定成功！');
                         this.bindSuccess();

@@ -66,6 +66,12 @@
                 </div>
             </div>
         </div>
+        <div class="batch">
+            <p class="batchBtn" @click="batchDS">
+                <img src="../../../../assets/img/doing.png"/>
+                <span>批量完成打扫</span>
+            </p>
+        </div>
         <div>
             <div style="margin-top: 15px" v-for="(v, k, i) in roomList" :key="i">
                 <p>{{ k }}</p>
@@ -514,7 +520,6 @@ export default {
         },
         // 关闭详情页
         closePage: function (data) {
-            console.log(data);
             if (data[0] == 'ok') {
                 if (data[1] == 1) {
                     this.ccontractId = data[3];
@@ -569,46 +574,6 @@ export default {
         },
         markCardn: function () {
             this.cardShow = false;
-        },
-        // 状态点击
-        doing: function (da) {
-            this.roomData = da;
-            // if (da.useState == '0') {
-            //     this.$confirm('是否将该房间改为不可用?', '提示', {
-            //         confirmButtonText: '确定',
-            //         cancelButtonText: '取消',
-            //         type: 'warning'
-            //     }).then(async () => {
-            //         let data = {
-            //             roomId: da.roomId,
-            //             useState: 9
-            //         };
-            //         RoomService.updateRoom(data).then((res) => {
-            //             if (res.status == 0) {
-            //                 this.$message.success('该房间已不可入住！');
-            //                 this.roomData.useState = 9;
-            //             }
-            //         });
-            //     });
-            // } 
-            // else if (da.useState == '2') {
-            //     this.$confirm('是否将该房间改为可入住?', '提示', {
-            //         confirmButtonText: '确定',
-            //         cancelButtonText: '取消',
-            //         type: 'warning'
-            //     }).then(async () => {
-            //         let data = {
-            //             roomId: da.roomId,
-            //             useState: 0
-            //         };
-            //         RoomService.updateRoom(data).then((res) => {
-            //             if (res.status == 0) {
-            //                 this.$message.success('该房间可正常入住！');
-            //                 this.roomData.useState = 0;
-            //             }
-            //         });
-            //     });
-            // }
         },
         // 房间状态切换有2级
         two(d){
@@ -742,6 +707,29 @@ export default {
                 });
             }
             
+        },
+        // 批量完成打扫
+        batchDS(){
+            this.$confirm('确定已完成所有房间的清扫？','提示',{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(()=>{
+                let rids = [];
+                for(let key in this.roomList){
+                    this.roomList[key].forEach((da)=>{
+                        if(da.useState == "3"){
+                            rids.push(da.roomId);
+                        }
+                    })
+                }
+                RoomService.editRoomStatus({"roomIds":rids.join(),"state":"0"}).then((res)=>{
+                    if(res.status == 0){
+                        this.$message.success('操作完成！');
+                        this.find();
+                    }
+                })
+            })
         }
     }
 };
@@ -976,5 +964,19 @@ export default {
     margin-top: 5px;
     cursor: pointer;
     font-size: 14px;
+}
+.batch{
+    display: flex;
+}
+.batchBtn{
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.batchBtn>span{
+    color:#1d59bc;
+    font-size: 14px;
+    border-bottom:1px solid #1d59bc;
 }
 </style>

@@ -16,12 +16,19 @@
                     </div>
                 </div>
                 <div class="filterBox">
+                    <p>房间号</p>
+                    <div>
+                        <el-input placeholder="请输入房间号" v-model="card.usedRoomName"></el-input>
+                    </div>
+                </div>
+                <div class="filterBox">
                     <p>卡号</p>
                     <div>
                         <el-input placeholder="请输入卡号" v-model="card.cardId"></el-input>
                     </div>
                 </div>
-                <p class="readCardClass" @click="read">读卡</p>
+                <p class="readCardClass" @click="Connect">读卡</p>
+                <object id="hfrdapiAX" classid="clsid:FA83A3E6-10E0-42B4-ABF5-3AA9411EE12E" style="height: 0"></object>
             </div>
             <div class="btns">
                 <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
@@ -186,6 +193,71 @@ export default {
         handleCurrentChange: function (cg) {
             this.currentPage = cg;
             this.find();
+        },
+         // 连接读卡器+读卡
+        Connect() {
+            var status;
+            status = hfrdapiAX.W_Sys_IsOpen(0);
+            if (status == true) {
+                status = hfrdapiAX.W_Sys_Close(0);
+                if (status != 0) {
+                    this.$message.warning('W_Sys_Close faild !');
+                    return;
+                }
+            }
+            //Open reader
+            status = hfrdapiAX.W_Sys_Open(0, 0, parseInt(0x0416), parseInt(0x8020));
+            if (status != 0) {
+                this.$message.warning('W_Sys_Open faild !');
+                return;
+            }
+
+            //Init reader
+            status = hfrdapiAX.W_Sys_SetAntenna(0, 0); //Close antenna
+            if (status != 0) {
+                this.$message.warning('W_Sys_SetAntenna faild !');
+                return;
+            }
+
+            status = hfrdapiAX.W_Sys_InitType(0, 65); //Initialize the reader to ISO14443A mode
+            if (status != 0) {
+                this.$message.warning('W_Sys_InitType faild !');
+                return;
+            }
+
+            status = hfrdapiAX.W_Sys_SetAntenna(0, 1); //Open antenna
+            if (status != 0) {
+                this.$message.warning('W_Sys_SetAntenna faild !');
+                return;
+            }
+
+            //Success Tips
+            hfrdapiAX.W_Sys_SetBuzzer(0, 20);
+            //this.$message.success('连接成功!');
+            this.ReadBlock();
+        },
+        Request() {
+            var status;
+            //Check whether the reader is opened or not.
+            status = hfrdapiAX.W_Sys_IsOpen(0);
+            if (status != true) {
+                this.$message.warning('Please connect the device first !');
+                return;
+            }
+
+            //Get card serial number
+            status = hfrdapiAX.W_TyA_GetCard(0, parseInt(0x52)); //0x52 = search all card
+            if (status != 0) {
+                this.$message.warning('W_TyA_GetCard faild !' + ' ErrorCode: 0x' + status.toString(16));
+                return;
+            }
+            this.card.cardId = hfrdapiAX.WP_String;
+        },
+        // 读卡
+        ReadBlock() {
+            this.Request();
+            this.$message.success('读卡成功 !');
+            this.findAll();
         },
         //读卡-查询
         read(){
