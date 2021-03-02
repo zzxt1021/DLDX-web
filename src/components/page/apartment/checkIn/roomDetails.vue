@@ -17,7 +17,7 @@
                             <el-col :span="4">
                                 <p class="hzr" style="margin-left:10px" @click="ReadIDCard">读取证件</p>
                             </el-col>
-                            <object id="CertCtl" classid="clsid:30516390-004F-40B9-9FC6-C9096B59262E" type="application/cert-reader"  style="height: 20px;width:20px"></object>
+                            <!-- <object id="CertCtl" classid="clsid:30516390-004F-40B9-9FC6-C9096B59262E" type="application/cert-reader"  style="height: 20px;width:20px"></object> -->
 
                             <!-- <object id="CertCtl" TYPE="application/cert-reader" width="0" height="0"></object> -->
                             <!-- <el-col :span="4" :offset="1">

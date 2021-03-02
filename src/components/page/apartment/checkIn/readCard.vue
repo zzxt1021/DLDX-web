@@ -18,7 +18,7 @@
                 <div class="card">
                     <img src="../../../../assets/img/cards.gif" style="" />
                 </div>
-                <object id="hfrdapiAX" classid="clsid:FA83A3E6-10E0-42B4-ABF5-3AA9411EE12E" style="height: 0"></object>
+                <!-- <object id="hfrdapiAX" classid="clsid:FA83A3E6-10E0-42B4-ABF5-3AA9411EE12E" style="height: 0"></object> -->
 
                 <div class="khc">
                     <img src="../../../../assets/img/kahao.png" />
@@ -231,8 +231,8 @@ export default {
                 type: 'g',
                 usedUser: this.userName,
                 mark: this.mark,
-                usedRoomId:rid,
-                usedRoomName:rname,
+                //usedRoomId:rid,
+                //usedRoomName:rname,
             }).then(() => {
                 this.jishu();
             });
@@ -318,7 +318,7 @@ export default {
                     this.$message.warning('请成功写入房卡！');
                 }
             } else {
-                if (this.success) {
+               if (this.success) {
                     let st, et;
                     if (!this.stime) {
                         st = '0000-00-00 00:00';
@@ -336,7 +336,7 @@ export default {
                             hijack: false,
                             weekDay: [0, 1, 2, 3, 4, 5, 6],
                             key: this.writeVal,
-                            key: '00242000',
+                            //key: '00242000',
                             openTimes: 0,
                             startTime: st,
                             endTime: et

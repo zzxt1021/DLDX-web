@@ -13,7 +13,7 @@ import * as echarts from 'echarts'
 
 import axios from 'axios'
 Vue.prototype.$axios = axios
-//axios.defaults.baseURL = '/api'  //关键代
+axios.defaults.baseURL = '/api'  //关键代
 axios.defaults.baseURL = ''  //关键代
 
 Vue.config.productionTip = false;
@@ -24,7 +24,7 @@ Vue.use(ElementUI, {
     size: 'small'
 });
 const i18n = new VueI18n({
-    locale: 'zh',
+    locale: 'zh', 
     messages
 });
 

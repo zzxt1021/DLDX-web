@@ -40,7 +40,7 @@
                                     </el-date-picker>
                                 </div>
                             </div>
-                            <div class="bh" v-if="hasCheck" @click="find">
+                            <div class="bh" v-if="hasCheck" @click="clickAll">
                                 <img src="../../../../assets/img/checkk.png" v-if="!bhShow"/>
                                 <img src="../../../../assets/img/checkked.png" v-if="bhShow"/>
                                 <p>只查工作间</p>
@@ -158,7 +158,7 @@ export default {
             gzjroomIds:[],//工作间的room
             gzjroomNames:[],
             allS:false,// 全选
-            bhShow:true,//是否包含工作间
+            bhShow:false,//只查工作间
         };
     },
     mounted() {
@@ -194,7 +194,16 @@ export default {
             }
             return fmt;
         },
-        
+        clickAll:function(){
+            console.log('测试');
+            if(this.bhShow){
+                this.bhShow = false;
+            }else{
+                this.bhShow = true;
+            }
+            console.log(this.bhShow )
+            this.find();
+        },
         find: function () {
             if (this.buildTypeId.length > 0) {
                 if (this.buildTypeId.length == 1) {
@@ -216,10 +225,7 @@ export default {
                 endData = this.dateFormat('YYYY-mm-dd', new Date(this.times[1]));
             }
             let filterData =JSON.parse(JSON.stringify(this.filterData)) ;
-            if(this.bhShow){
-                this.bhShow = false;
-            }else{
-                this.bhShow = true;
+            if(this.bhShow == true){
                 filterData.roomType ='20'
             }
             if (startDate && endData) {

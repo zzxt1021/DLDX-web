@@ -18,7 +18,7 @@
                 <div class="filterBox">
                     <p>房间号</p>
                     <div>
-                        <el-input placeholder="请输入房间号" v-model="card.usedRoomName"></el-input>
+                        <el-input placeholder="请输入房间号" v-model="card.roomName"></el-input>
                     </div>
                 </div>
                 <div class="filterBox">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <p class="readCardClass" @click="Connect">读卡</p>
-                <object id="hfrdapiAX" classid="clsid:FA83A3E6-10E0-42B4-ABF5-3AA9411EE12E" style="height: 0"></object>
+                <!-- <object id="hfrdapiAX" classid="clsid:FA83A3E6-10E0-42B4-ABF5-3AA9411EE12E" style="height: 0"></object> -->
             </div>
             <div class="btns">
                 <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>

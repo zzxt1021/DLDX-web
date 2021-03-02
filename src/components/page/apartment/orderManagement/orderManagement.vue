@@ -177,8 +177,8 @@
         <readCard
             v-if="doShow"
             @funs="readCardn"
-            :stime="checkData.contract.reserveStartDate.substring(0, 10)"
-            :etime="checkData.contract.reserveEndDate.substring(0, 10)"
+            :stime="checkData.contract.reserveStartDate"
+            :etime="checkData.contract.reserveEndDate"
             :rid="checkData.roomDto.roomId"
             :rname="checkData.roomDto.roomName"
             :contractId="checkData.contract.contractId"
