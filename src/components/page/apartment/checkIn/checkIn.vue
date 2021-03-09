@@ -209,19 +209,19 @@
                                 <p>{{ a.roomName }}房间</p>
                                 <div
                                     class="stateP"
-                                    :class="{ s1: a.useState == '0', s2: a.useState == '2', s3: a.useState == '3', s4: a.useState == '9' }"
-                                    v-if="a.useState == '0' || a.useState == '2' || a.useState == '3' || a.useState == '9'"
+                                    :class="{ s1: a.useState == '0', s2: a.useState == '1', s3: a.useState == '3', s4: a.useState == '9' }"
+                                    v-if="a.useState == '0' || a.useState == '1' || a.useState == '3' || a.useState == '9'"
                                     @mouseenter="a.useState == '3' ||a.useState == '9' || a.useState == '0'?two(a):''"
                                     @mouseleave="a.useState == '3'||a.useState == '9' || a.useState == '0'?twoleave(a):''"
                                 >
                                     <span v-if="a.useState == '0'">空闲</span>
-                                    <span v-if="a.useState == '2'">满员</span>
+                                    <span v-if="a.useState == '1'">满员</span>
                                     <span v-if="a.useState == '3'">待打扫</span>
                                     <span v-if="a.useState == '9'">不可用</span>
 
                                     <img
                                         src="../../../../assets/img/right.png"
-                                        v-if="!(a.useState == '2' && a.consumers && a.consumers.length > 0)"
+                                        v-if="!(a.useState == '1' && a.consumers && a.consumers.length > 0)"
                                     />
                                     <div class="stateFDiv" v-if="a.useState == '3' && wdsShow && roomData.roomId == a.roomId" @mouseenter="dsenter" @mouseleave="dsleave">
                                         <p @click.stop="okds(a,1)">已打扫</p>
@@ -264,7 +264,7 @@
                                     </p>
                                     <div class="yajin"></div>
                                     <div class="roomBtn">
-                                        <p class="ruzhu" @click="moveInto(a, 1)">入住</p>
+                                        <p class="ruzhu" @click="moveInto(a, 1)" v-show="a.useState == 0">入住</p>
                                     </div>
                                 </div>
                             </div>
@@ -423,16 +423,45 @@ export default {
             });
         },
 
-        // 退房
+        // 退房(退押金)
         backRoom(d, x) {
             this.roomData = d;
-            this.$confirm('是否确定退房并退还押金?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(async () => {
+            this.$prompt('请输入退还押金金额,并退房！', '提示', {
+                confirmButtonText: '退房退押金',
+                cancelButtonText: '只退房',
+                inputPattern: /^[0-9]*$/,
+                inputErrorMessage: '请输入正确的数字',
+                inputValue:d.consumers[x].deposit,
+                }).then(({ value }) => {
+                    console.log(value)
+                    console.log(d);
+                    if(d.consumers[x].deposit<Number(value)){
+                        this.$message.warning('输入的金额大于押金!');
+                    }else{
+                        console.log('else');
+                            this.backRoomT(d,x,1,value);
+                        
+                    }
+                }).catch(() => {
+                    this.backRoomT(d,x,2);
+            });
+            
+        },
+        // 退房
+       async backRoomT(d,x,t,v){
+            // this.$confirm('是否确定退房?', '提示', {
+            //     confirmButtonText: '确定',
+            //     cancelButtonText: '取消',
+            //     type: 'warning'
+            // }).then(async () => {
                 let contractId = await this.findContract(d.roomId, x);
-                RoomService.checkOutRoomBad(d.roomId, contractId).then((res) => {
+                let dat;
+                if(t == 1){
+                    dat={'contractId':contractId,'deposit':v};
+                }else if(t == 2){
+                    dat={'contractId':contractId};
+                }
+                RoomService.checkOutRoomBad(dat).then((res) => {
                     if (res.m.length >= 0) {
                         this.$message.success('退房成功！');
                         this.roomData.useState = 1;
@@ -462,34 +491,7 @@ export default {
                         EquipmentService.updateDevice(dtt).then((res) => {});
                     }
                 });
-
-                // RoomService.checkOutRoom(d.roomId).then((res) => {
-                //     if (res.m.length >= 0) {
-                //         this.$message.success('退房成功！');
-                //         this.roomData.useState = 1;
-                //         this.roomData.consumers = null;
-                //     }
-                //     if(res.m && res.m.length>0){
-                //         let cardDevList = res.m;
-                //         let uid = [];
-                //         for (let k = 0; k < cardDevList.length; k++) {
-                //             // 门卡管理注销
-                //             this.unbindCardDev(cardDevList[k].cardId,cardDevList[k].deviceId);
-                //             uid.push(Number(cardDevList[k].lockUser));
-                //         }
-                //         //控客注销
-                //         let dtt = {
-                //             action: '8',
-                //             args: {
-                //                 userId: uid
-                //             },
-                //             deviceId: cardDevList[0].deviceId
-                //         };
-                //         EquipmentService.updateDevice(dtt).then((res) => {});
-                //     }
-                //     //this.find();
-                // });
-            });
+            //});
         },
         // 房间详情页打开
         moveInto: function (d, t) {

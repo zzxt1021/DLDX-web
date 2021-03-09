@@ -69,8 +69,12 @@ export const RoomService = {
       return request.sendPost('/room/contract/checkout/'+id);
     },
     // 按床退房
-    checkOutRoomBad(roomid,contractId){
-      return request.sendPost('/room/contract/checkout/'+roomid+'/'+contractId);
+    checkOutRoomBad(data){
+      return request.sendPost('/room/contract/checkout',data);
+    },
+    //退押金
+    backDeposit(data){
+      return request.sendPost('/room/contract/checkout/deposit',data)
     },
     //修改订单
     editOrder(data){
@@ -92,5 +96,7 @@ export const RoomService = {
     //批量房间状态修改
     editRoomStatus(data){
       return request.sendPost('/base/room/edits/state',data);
-    }
+    },
+
+    
 }

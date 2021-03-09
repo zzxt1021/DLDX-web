@@ -107,7 +107,11 @@
                         </el-table-column>
                         <el-table-column label="押金" align="center" width="100">
                             <template slot-scope="scope">
-                                <p>{{ scope.row.deposit ? scope.row.deposit : 0 }}</p>
+                                <div style="display:flex;justify-content:center">
+                                    <p>{{ scope.row.consumerList[0].deposit ? scope.row.consumerList[0].deposit : 0 }}</p>
+                                    <p class="tuiIcon" v-if="scope.row.consumerList[0].deposit && scope.row.contract.contractState == '4'" @click="backDes(scope.row)">退</p>
+                                </div>
+                                
                             </template>
                         </el-table-column>
                         <el-table-column label="订单状态" align="center">
@@ -361,10 +365,37 @@ export default {
             this.doShow = true;
             this.checkData = d;
         },
-        // 查看
-        checkOrder() {}
+        // 退还押金
+        backDes(d){
+            this.$prompt('请输入退还押金金额！', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPattern: /^[0-9]*$/,
+                inputErrorMessage: '请输入正确的数字',
+                inputValue:d.consumerList[0].deposit,
+                }).then(({ value }) => {
+                    if(d.consumerList[0].deposit<Number(value)){
+                        this.$message.warning('输入的金额大于押金!');
+                    }else{
+                        RoomService.backDeposit({'contractId':d.contract.contractId,'deposit':value}).then((res)=>{
+                            this.$message.success(res.m);
+                        })
+                        
+                    }
+                }).catch(() => {
+            });
+        }
     }
 };
 </script> 
 <style scoped>
+.tuiIcon{
+    color: #fe6931;
+    border-radius: 4px;
+    border: 1px solid #fe6931;
+    padding: 0 2px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 10px;
+}
 </style>
