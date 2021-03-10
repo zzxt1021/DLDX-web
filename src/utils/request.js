@@ -23,7 +23,8 @@ service.sendGet = (url, params) => {
         method: 'GET',
         headers:{
             'Content-Type':'application/json;charset=UTF-8',
-            'token':token
+            'token':token,
+            'client':'web'
         },
         data:params
         //params: params
@@ -36,7 +37,8 @@ service.sendPost = (url, data) => {
         method: 'POST',
         headers:{
             'Content-Type':'application/json;charset=UTF-8',
-            'token':token
+            'token':token,
+            'client':'web'
         },
         data: data
     });
@@ -48,7 +50,8 @@ service.sendDelete = (url, data) => {
         method: 'DELETE',
         headers:{
             'Content-Type':'application/json;charset=UTF-8',
-            'token':token
+            'token':token,
+            'client':'web'
         },
         data: data
     });

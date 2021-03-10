@@ -457,7 +457,7 @@ export default {
                 let contractId = await this.findContract(d.roomId, x);
                 let dat;
                 if(t == 1){
-                    dat={'contractId':contractId,'deposit':v};
+                    dat={'contractId':contractId,'deposit':Number(v)};
                 }else if(t == 2){
                     dat={'contractId':contractId};
                 }

@@ -377,8 +377,14 @@ export default {
                     if(d.consumerList[0].deposit<Number(value)){
                         this.$message.warning('输入的金额大于押金!');
                     }else{
-                        RoomService.backDeposit({'contractId':d.contract.contractId,'deposit':value}).then((res)=>{
-                            this.$message.success(res.m);
+                        RoomService.backDeposit({'contractId':d.contract.contractId,'deposit':Number(value)}).then((res)=>{
+                            if(res.m){
+                                this.$message.success(res.m);
+                                this.find();
+                            }else{
+                                this.$message.error('退还押金失败！');
+                            }
+                            
                         })
                         
                     }
