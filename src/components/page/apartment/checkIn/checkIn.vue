@@ -67,6 +67,21 @@
             </div>
         </div>
         <div class="batch">
+            <!-- <el-upload
+            ref="drdDiv"
+            class="drdDiv"
+            action="/room/contract/import"
+            :on-success="handleSuccess"
+            :multiple="false"
+            :limit="1"
+            :show-file-list="false"
+            accept=".xlsx,.xls">
+                <p class="batchBtn">
+                    <img src="../../../../assets/img/doing.png"/>
+                    <span>入住人导入</span>
+                </p>
+            </el-upload> -->
+            
             <p class="batchBtn" @click="batchDS">
                 <img src="../../../../assets/img/doing.png"/>
                 <span>批量完成打扫</span>
@@ -732,13 +747,27 @@ export default {
                     }
                 })
             })
-        }
+        },
+        //文件导入入住人
+        handleSuccess(rd){
+            console.log(rd);
+            // if(rd.msg == '操作成功'){
+            //     this.$message.success('导入成功！');
+            //     this.getList();
+            // }
+        },
     }
 };
 </script>
 <style>
 .roomDiv .el-card__body {
     padding: 0;
+}
+.drdDiv .el-upload--text{
+    width: auto;
+    height: auto;
+    border:none;
+    background: transparent;
 }
 </style>
 <style scoped>
@@ -975,6 +1004,7 @@ export default {
     align-items: center;
     margin-top: 10px;
     cursor: pointer;
+    margin-right:15px;
 }
 .batchBtn>span{
     color:#1d59bc;

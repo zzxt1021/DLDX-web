@@ -284,7 +284,7 @@ export default {
                 this.$message.warning('请填写入住人信息！')
             }else{
                 for(let k=0;k<this.consumerList.length;k++){
-                   if (this.consumerList[k].consumerName && this.consumerList[k].consumerNo) {
+                   if (this.consumerList[k].consumerName) {
                         let reg = /(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)|(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^\d{17}(\d|X|x)$)/;
                         // if (reg.test(this.consumerList[k].consumerNo) === false) {
                         //     this.$message.warning('身份证不合法！');
@@ -294,16 +294,16 @@ export default {
                         this.$message.warning('请填写正确的入住人信息！');
                         return;
                     }
-                    if (this.consumerList[k].consumerTel) {
-                        let reg = /^1[0-9]{10}$/;
-                        // if (reg.test(this.consumerList[k].consumerTel) == false) {
-                        //     this.$message.warning('手机号不合法！');
-                        //     return;
-                        // }
-                    } else {
-                        this.$message.warning('请填写预留手机号！');
-                        return;
-                    }
+                    // if (this.consumerList[k].consumerTel) {
+                    //     let reg = /^1[0-9]{10}$/;
+                    //     if (reg.test(this.consumerList[k].consumerTel) == false) {
+                    //         this.$message.warning('手机号不合法！');
+                    //         return;
+                    //     }
+                    // } else {
+                    //     this.$message.warning('请填写预留手机号！');
+                    //     return;
+                    // }
                 }
             }
             if(!this.roomData && this.roomData.roomId){

@@ -29,7 +29,7 @@
                         <div>
                             <el-input placeholder="请输入名称"></el-input>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="filterBox">
                         <p>告警等级</p>
                         <div>
@@ -37,7 +37,7 @@
                                 <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                             </el-select>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
                 <div class="btns">
                     <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
@@ -49,18 +49,24 @@
              <template>
                     <el-table :data="tableData" border style="width: 100%" v-loading="loading" :header-cell-style="rowStyle">
                         <el-table-column type="index" width="100" align="center"></el-table-column>
-                        <el-table-column label="告警内容" min-width="30%" align="center">
+                        <el-table-column label="告警内容" align="center">
                             <template slot-scope="scope">
-                                <p>{{scope.row.roomName}}房间&nbsp;{{contentBack(scope.row.alarmContent)}}</p>
+                                <p class="contp">
+                                    <span class="yz">严重</span>
+                                    <span class="tx">提醒</span>
+                                    <span>{{scope.row.roomName}}房间&nbsp;{{contentBack(scope.row.alarmContent)}}</span>
+                                </p>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="alarmTime" label="告警时间" min-width="30%" align="center"></el-table-column>
-                        <el-table-column prop="roomName" min-width="20%" label="房间号" align="center"></el-table-column>
-                        <!-- <el-table-column label="操作" min-width="10%" align="center">
+                        <el-table-column prop="alarmTime" label="告警时间" align="center"></el-table-column>
+                        <el-table-column prop="roomName" label="房间号" align="center"></el-table-column>
+                        <el-table-column label="告警状态" align="center"></el-table-column>
+                        <el-table-column label="操作" width="120" align="center">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="check(scope.row)">操作</el-button>
+                                <el-button type="text" size="small" @click="handle(scope.row)">处理</el-button>
+                                <el-button type="text" size="small" @click="check(scope.row)">查看</el-button>
                             </template>
-                        </el-table-column> -->
+                        </el-table-column>
                     </el-table>
                 </template>
                 <div style="background: #fff; text-align: right; padding: 5px 0">
@@ -76,19 +82,24 @@
                     </el-pagination>
                 </div>
         </div>
+        <handlePage :data="checkData" v-if="showDo" @func="closeHandle"></handlePage>
     </div>
 </template>
 <script>
 import {AlarmService} from "../../../../api/alarm";
 import alarmDetail from "./alarmDetail.vue";
+import handlePage from "./handle";
 export default {
     name: 'alarmList',
     components:{
         alarmDetail,
+        handlePage
     },
     data(){
         return{
+            options2:[{'label':'全部',value:''},{'label':'严重告警',value:'1'},{'label':'普通提示',value:'2'}],
             times:'',
+            value:'',
             pickerOptions:{
                 disabledDate(time) {
                     return time.getTime() > Date.now() 
@@ -100,6 +111,7 @@ export default {
             pageSize: 15,
             total: 0,
             checkData:{},// 选中的告警
+            showDo:false,
         }
     },
     mounted(){
@@ -154,6 +166,14 @@ export default {
         check(dt){
             this.checkData = dt;
         },
+        // 处理
+        handle(dt){
+            this.showDo = true;
+            this.checkData = dt;
+        },
+        closeHandle(){
+            this.showDo = false;
+        },
         //告警内容截取
         contentBack(cont){
             if(cont){
@@ -184,4 +204,18 @@ export default {
 };
 </script>
 <style scoped>
+.contp{
+    display: flex;
+    justify-content: center;
+}
+.yz{
+    color: red;
+    border:1px solid red;
+    border-radius: 4px;
+}
+.tx{
+    color:#409EFF;
+    border:1px solid #409EFF;
+    border-radius: 4px;
+}
 </style>

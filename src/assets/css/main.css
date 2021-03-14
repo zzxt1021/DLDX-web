@@ -264,3 +264,36 @@ a {
 .el-select{
     width:100%;
 }
+.modelK {
+    height: 40px;
+    border-bottom: 1px solid #e2e2e2;
+    color: #08588e;
+    line-height: 40px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.modelTit {
+    border-bottom: 2px solid #08588e;
+}
+.btnss {
+    display: flex;
+    justify-content: center;
+}
+.btnss p {
+    width: 100px;
+    line-height: 32px;
+    background: #00b292;
+    border-radius: 4px;
+    color: #fefefe;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    margin-right: 20px;
+    cursor: pointer;
+}
+.btnss p > img {
+    margin-right: 10px;
+}
