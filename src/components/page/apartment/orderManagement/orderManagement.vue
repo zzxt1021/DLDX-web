@@ -63,7 +63,7 @@
                 <template>
                     <el-table :data="tableData" border style="width: 100%" v-loading="loading" :header-cell-style="rowStyle">
                         <el-table-column type="index" width="80" align="center"></el-table-column>
-                        <el-table-column label="订单时间" align="center">
+                        <el-table-column label="订单时间" align="center" width="180">
                             <template slot-scope="scope">
                                 <span v-if="scope.row.contract.reserveStartDate"
                                     >{{ scope.row.contract.reserveStartDate.substring(0, 10) }} 至
@@ -105,6 +105,7 @@
                                 <span v-if="scope.row.roomDto.roomType == '20-02'">大床房</span>
                             </template>
                         </el-table-column>
+                        <el-table-column label="入住时间" align="center" prop="contract.checkInTime" width="140"></el-table-column>
                         <el-table-column label="押金" align="center" width="100">
                             <template slot-scope="scope">
                                 <div style="display:flex;justify-content:center">
@@ -123,13 +124,19 @@
                                 <p v-if="scope.row.contract.contractState == '5'">已取消</p>
                             </template>
                         </el-table-column>
+                        <el-table-column label="开票状态" align="center">
+                            <template slot-scope="scope">
+                                <p v-if="scope.row.contract.invoice">已开票</p>
+                                <p v-else>未开票</p>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="操作" width="155" align="center">
                             <template slot-scope="scope">
                                 <!-- <el-button type="text" size="small" @click="checkOrder(scope.row)">查看</el-button> -->
                                 <el-button
                                     type="text"
                                     size="small"
-                                    v-if="scope.row.contract.contractState == '5' || scope.row.contract.contractState == '4'"
+                                    v-if="scope.row.contract.contractState == '5'"
                                     >-</el-button
                                 >
                                 <el-button
@@ -143,7 +150,7 @@
                                     type="text"
                                     size="small"
                                     @click="markCard(scope.row)"
-                                    v-if="scope.row.contract.contractState == '1'"
+                                    v-if="scope.row.contract.contractState == '1'|| scope.row.contract.contractState == '2' || scope.row.contract.contractState == '3'"
                                     >制卡</el-button
                                 >
                                 <el-button
@@ -159,6 +166,13 @@
                                     @click="cancelRoom(scope.row)"
                                     v-if="scope.row.contract.contractState == '2' || scope.row.contract.contractState == '3'"
                                     >取消</el-button
+                                >
+                                <el-button
+                                    type="text"
+                                    size="small"
+                                    v-if="scope.row.contract.contractState == '4'"
+                                    @click="doInvoice(scope.row)"
+                                    >开票</el-button
                                 >
                             </template>
                         </el-table-column>
@@ -336,8 +350,8 @@ export default {
                     contract: {
                         contractId: d.contract.contractId,
                         contractState: 5,
-                        reserveEndDate: d.contract.reserveEndDate.substring(0, 10),
-                        reserveStartDate: d.contract.reserveStartDate.substring(0, 10),
+                        reserveEndDate: d.contract.reserveEndDate,
+                        reserveStartDate: d.contract.reserveStartDate,
                         roomId: d.roomDto.roomId
                     }
                 }).then((res) => {
@@ -390,6 +404,26 @@ export default {
                     }
                 }).catch(() => {
             });
+        },
+        // 开票
+        doInvoice(da){
+            this.$confirm('该订单确定已开票?','提示',{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(()=>{
+                RoomService.editOrder({
+                    contract: {
+                        contractId: da.contract.contractId,
+                        invoice: '1',
+                    }
+                }).then((res) => {
+                    if (res.status == 0) {
+                        this.$message.success('操作成功！');
+                        this.find();
+                    }
+                });
+            })
         }
     }
 };

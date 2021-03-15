@@ -57,7 +57,12 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    
+                    <el-form-item label="是否包房">
+                        <el-radio-group v-model="contractType" size="medium" >
+                            <el-radio-button label="1">包房</el-radio-button>
+                            <el-radio-button label="2">不包房</el-radio-button>
+                        </el-radio-group>
+                    </el-form-item>
                     <el-form-item label="收费标准" prop="fees">
                         <div class="detailTable">
                             <div class="detailTablehd">
@@ -183,6 +188,8 @@ export default {
             },
             rcShow:false,
             roomName:'',
+            contractType:'2',//2-床，1房
+            
         };
     },
     mounted() {
@@ -319,7 +326,7 @@ export default {
                 reserveEndDate: this.dateFormat('YYYY-mm-dd HH:MM:SS', checkOutTime),
                 remark: this.remark,
                 deposit:this.deposit,
-                contractType:2
+                contractType:this.contractType
             };
             if (this.rtype == 1) {
                 contract.contractState = 1;
