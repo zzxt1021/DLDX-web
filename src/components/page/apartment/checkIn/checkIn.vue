@@ -167,7 +167,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="roomBot" v-if="!a.consumers || a.consumers.length == 0">
+                            <div class="roomBot" v-if="(!a.consumers || a.consumers.length == 0) && a.useState != '9'">
                                 <div class="chuang">
                                     <p>
                                         <span>1号床位</span>
@@ -191,6 +191,9 @@
                                         <p class="ruzhu" @click="moveInto(a, 1)" v-show="a.useState == 0 || a.useState == 1">入住</p>
                                     </div>
                                 </div>
+                            </div>
+                            <div v-if="a.useState == '9'" style="height:108px;overflow-y:auto">
+                                <p style="color:#333;font-size:14px;text-align:center;margin-top:15px;">{{a.remark}}</p>
                             </div>
                             <!-- <div class="roomBG">
                                 <div class="roomBG-L">
@@ -638,22 +641,40 @@ export default {
                     });
                 });
             }else if(x == 2){
-                this.$confirm('确定将房间不可用?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(async () => {
+                // this.$confirm('确定将房间不可用?', '提示', {
+                //     confirmButtonText: '确定',
+                //     cancelButtonText: '取消',
+                //     type: 'warning'
+                // }).then(async () => {
+                //     let data = {
+                //         roomId: a.roomId,
+                //         useState: 9
+                //     };
+                //     RoomService.updateRoom(data).then((res) => {
+                //         if (res.status == 0) {
+                //             this.$message.success('该房间不可用！');
+                //             this.roomData.useState = 9;
+                //         }
+                //     });
+                // });
+                this.$prompt('确定房间不可用?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPlaceholder: '请填写备注',
+                }).then(({ value }) => {
                     let data = {
                         roomId: a.roomId,
-                        useState: 9
+                        useState: 9,
+                        remark: value
                     };
-                    RoomService.updateRoom(data).then((res) => {
+                    RoomService.updateRoom(data).then((res)=>{
                         if (res.status == 0) {
                             this.$message.success('该房间不可用！');
                             this.roomData.useState = 9;
+                            this.roomData.remark = value;
                         }
-                    });
-                });
+                    })
+                }).catch(() => {});
             }else if(x == 3){
                 this.$confirm('确定房间可正常使用?', '提示', {
                     confirmButtonText: '确定',
@@ -706,22 +727,37 @@ export default {
                     });
                 });
             }else if(x == 6){
-                this.$confirm('确定房间不可用?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(async () => {
+                this.$prompt('确定房间不可用?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPlaceholder: '请填写备注',
+                }).then(({ value }) => {
                     let data = {
                         roomId: a.roomId,
-                        useState: 9
+                        useState: 9,
+                        remark: value
                     };
-                    RoomService.updateRoom(data).then((res) => {
+                    RoomService.updateRoom(data).then((res)=>{
                         if (res.status == 0) {
                             this.$message.success('该房间不可用！');
                             this.roomData.useState = 9;
+                            this.roomData.remark = value;
                         }
-                    });
-                });
+                    })
+                }).catch(() => {});
+                // this.$confirm('确定房间不可用?', '提示', {
+                //     confirmButtonText: '确定',
+                //     cancelButtonText: '取消',
+                //     type: 'warning'
+                // }).then(async () => {
+                //     let data = {
+                //         roomId: a.roomId,
+                //         useState: 9
+                //     };
+                //     RoomService.updateRoom(data).then((res) => {
+                        
+                //     });
+                // });
             }
             
         },

@@ -15,7 +15,10 @@
                                 <el-input v-model="value['consumerNo']" placeholder="请填写入住人身份证" ></el-input>
                             </el-col>
                             <el-col :span="4">
-                                <p class="hzr" style="margin-left:10px" @click="ReadIDCard">读取证件</p>
+                                <div style="display:flex">
+                                    <p class="hzr" style="margin-left:10px" @click="ReadIDCard">读取证件</p>
+                                    <p class="hzr" style="margin-left:10px" @click="randomNum">随机</p>
+                                </div>
                             </el-col>
                             <!-- <object id="CertCtl" classid="clsid:30516390-004F-40B9-9FC6-C9096B59262E" type="application/cert-reader"  style="height: 20px;width:20px"></object> -->
 
@@ -256,7 +259,6 @@ export default {
         },
         // 读取身份证
         ReadIDCard:function(){
-            console.log('测试身份证dddd');
             var ret = CertCtl.connect();
             var conn = JSON.parse(ret);
             if(conn.resultFlag != 0){
@@ -269,7 +271,6 @@ export default {
                 this.$message.warning("readCert失败:"+cert.errorMsg);
             }else{
                 this.$message.success("读卡成功");
-                console.log(cert.resultContent);
                 this.consumerList[0].consumerNo = cert.resultContent.certNumber;
                 this.consumerList[0].consumerName = cert.resultContent.partyName;
                 this.consumerList[0].consumerSex = cert.resultContent.gender == 1?'男':'女';
@@ -280,6 +281,13 @@ export default {
             if(disConn.resultFlag != 0){
                 this.$message.warning("disconnect失败:"+disConn.errorMsg);
             }
+        },
+        // 随机身份证号
+        randomNum:function(){
+            let timesNum = (new Date()).getTime();
+            var num=parseInt(Math.random()*100000);
+            this.consumerList[0].consumerNo = timesNum + String(num);
+            this.$forceUpdate();
         },
         // 保存
         save: function () {
