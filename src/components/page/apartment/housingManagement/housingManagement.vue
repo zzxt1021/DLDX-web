@@ -60,13 +60,14 @@
                         <el-table-column label="房间类型" align="center">
                             <template slot-scope="scope">
                                 <p v-if="scope.row.roomType == '20-01'">标准间</p>
-                                <p v-if="scope.row.roomType == '20-02'">双人床</p>
+                                <p v-if="scope.row.roomType == '20-02'">大床房</p>
                             </template>
                         </el-table-column>
                         <el-table-column prop="square" label="面积" align="center"> </el-table-column>
-                        <el-table-column label="操作" width="100" align="center">
+                        <el-table-column label="操作" width="140" align="center">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="checkRoom(scope.row)">查看</el-button>
+                                <el-button type="text" size="small" @click="editRoom(scope.row)">编辑</el-button>
                                 <el-button type="text" size="small" @click="delRoom(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -86,20 +87,23 @@
                 </div>
             </div>
         </div>
-        <areaDetails @func="closePage" v-if="areaShow" :type="areaTy" :parentData="nodeData"></areaDetails>
+        <areaDetails @func="closePage" v-if="areaShow" :type="areaTy" :parentData="nodeData" :data="roomData"></areaDetails>
         <roomDetail @funr="closeRoom" v-if="rShow" :odata="checkData"></roomDetail>
+        <editRoom @funx="closeEdit" v-if="eShow" :data="checkData"></editRoom>
     </div>
 </template>
 <script>
 import areaDetails from './areaDetails.vue';
 import roomDetail from "./roomDetail";
+import editRoom from "./editRoom";
 import { RoomService } from '../../../../api/room';
 import { SystemService } from '../../../../api/system';
 export default {
     name: 'housingManagement',
     components: {
         areaDetails,
-        roomDetail
+        roomDetail,
+        editRoom
     },
     data() {
         return {
@@ -120,6 +124,7 @@ export default {
             areaTy: '' ,//新增类型
             checkData:{},// 查看的房间
             rShow:false,//查看房间显示
+            eShow:false,//编辑房间
         };
     },
     mounted() {
@@ -150,7 +155,8 @@ export default {
                 buildingType1Id: '',
                 buildingType2Id: '',
                 buildingType3Id: '',
-                roomName: this.roomName
+                roomName: this.roomName,
+                roomType:'all'
             };
             if (JSON.stringify(this.nodeData) != '{}') {
                 if (this.nodeData.value.type == 1) {
@@ -263,6 +269,19 @@ export default {
             }else if(val == 'ok'){
                 this.find();
             }
+        } ,
+        // 编辑房间
+        editRoom:function(da){
+            this.eShow = true;
+            this.checkData = JSON.stringify(da);
+            this.areaTy = 2;
+        },
+        // 关闭房间
+        closeEdit:function(da){
+            if(da == 'ok'){
+                this.find();
+            }
+            this.eShow=false;
         }
     }
 };

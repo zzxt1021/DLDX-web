@@ -25,11 +25,14 @@ export const RoomService = {
     editRoom(data){
       return request.sendPost('/base/room/add',data);
     },
-    // 修改房间
+    // 修改房间状态
     updateRoom(data){
+      return request.sendPost('/base/room/edits/state',data);
+    },
+    // 修改房间
+    updateBaseRoom(data){
       return request.sendPost('/base/room/edit',data);
     },
-   
     // 删除房间
     delRoom(data){
       return request.sendDelete('/base/room/remove',data);

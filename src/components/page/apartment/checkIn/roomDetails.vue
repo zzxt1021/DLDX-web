@@ -111,21 +111,15 @@
                             <p class="hzr" @click="choiceRoom">点击选择房间</p>
                         </div>
                     </el-form-item>
-                    <el-form-item label="预收参考" prop="">
-                        <div class="yushouDiv">
-                            <el-input v-model="yushou" :disabled="true" placeholder="房费+押金"></el-input>
-                            <span style="padding-left: 10px">元</span>
-                        </div>
-                    </el-form-item>
                     <el-form-item label="实收押金" prop="">
                         <div class="yushouDiv">
                             <el-input v-model="deposit"></el-input>
                             <span style="padding-left: 10px">元</span>
                         </div>
                     </el-form-item>
-                    <el-form-item label="实收金额" prop="">
+                    <el-form-item label="实收房费" prop="">
                         <div class="yushouDiv">
-                            <el-input v-model="yushou"></el-input>
+                            <el-input v-model="paid"></el-input>
                             <span style="padding-left: 10px">元</span>
                         </div>
                     </el-form-item>
@@ -192,6 +186,8 @@ export default {
             rcShow:false,
             roomName:'',
             contractType:'2',//2-床，1房
+            paid:0,//房费
+            deposit:0,//押金
             
         };
     },
@@ -200,7 +196,7 @@ export default {
         SystemService.getSysCodePid('22').then((res) => {
             for (let x = 0; x < res.length; x++) {
                 let v = JSON.parse(res[x].value);
-                this.moneyList.push({ rules: v.t == 'd' ? '按天收费' : '按月收费', money: v.p, deposit: v.y, checked: false });
+                this.moneyList.push({ rules: v.t == 'b' ? '按床收费' : '按房收费', money: v.p, deposit: v.y, checked: false });
             }
         });
     },
@@ -334,7 +330,8 @@ export default {
                 reserveEndDate: this.dateFormat('YYYY-mm-dd HH:MM:SS', checkOutTime),
                 remark: this.remark,
                 deposit:this.deposit,
-                contractType:this.contractType
+                contractType:this.contractType,
+                paid:this.paid
             };
             if (this.rtype == 1) {
                 contract.contractState = 1;
@@ -346,7 +343,7 @@ export default {
                 if (res.status == 0) {
                     this.$message.success('办理成功！');
                     if(contract.contractState == 1){
-                         this.markSuccess(res.data.contractId);
+                         this.markSuccess(res.data);
                     }else{
                         this.$emit('func', 'ok',2);
                     }
@@ -356,7 +353,7 @@ export default {
             });
         },
         // 办理成功后，是否绑定卡
-        markSuccess:function(contractId){
+        markSuccess:function(data){
             this.$confirm('是否绑定门卡?', '提示', {
                 confirmButtonText: '绑定',
                 cancelButtonText: '取消',
@@ -366,13 +363,13 @@ export default {
                 for(let v=0;v<this.consumerList.length;v++){
                     this.consumerList[v].deposit = this.deposit;
                 }
-                this.$emit('func', 'okcard',1,this.consumerList,contractId);
+                this.$emit('func', 'okcard',1,data.room,data.contract.contractId);
             }).catch(()=>{
                 this.dialogVisible = false;
                 for(let v=0;v<this.consumerList.length;v++){
                     this.consumerList[v].deposit = this.deposit;
                 }
-                this.$emit('func', 'ok',1,this.consumerList,contractId);
+                this.$emit('func', 'ok',1,data.room,data.contract.contractId);
             })
         },
         //取消
@@ -427,7 +424,8 @@ export default {
         //计算预收金额
         changeData() {
             if (this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
-                this.yushou = Number(this.days * this.moneychecked.money) + Number(this.moneychecked.deposit);
+                this.paid = Number(this.days * this.moneychecked.money) ;
+                this.deposit = Number(this.moneychecked.deposit)
             }
         }
     }

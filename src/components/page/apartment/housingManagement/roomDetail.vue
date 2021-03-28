@@ -165,7 +165,7 @@
                     <el-row :gutter="26" class="htp">
                         <el-col :span="4" style="text-align: right; margin-top: 5px">备注</el-col>
                         <el-col :span="16">
-                            <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="room.remark"> </el-input>
+                            <el-input type="textarea" :rows="3" placeholder="请输入内容" v-model="room.remark" disabled> </el-input>
                         </el-col>
                     </el-row>
                 </div>

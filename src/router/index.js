@@ -114,6 +114,11 @@ export default new Router({
                             path: '/system/dataDictionary',
                             component: () => import(/* webpackChunkName: "dataDictionary" */ '../components/page/system/dataDictionary/dataDictionary.vue'),
                             meta: { title: '数据字典' }
+                        },
+                        {
+                            path: '/system/roomManage',
+                            component: () => import(/* webpackChunkName: "roomManage" */ '../components/page/system/roomManage/roomManage.vue'),
+                            meta: { title: '房型管理' }
                         }
                     ]
                 },

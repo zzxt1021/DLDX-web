@@ -11,6 +11,16 @@ export const SystemService = {
       return request.sendGet('/system/code/'+pid);
     },
 
+    // 新增数据字典
+    editSysCode(data){
+      return request.sendPost('/system/code/edit',data);
+    },
+
+    // 删除数据字典
+    delSysCode(did){
+      return request.sendPost('/system/code/remove/'+did);
+    },
+    
     // 添加大楼/单元/楼层
     addBulidingTree(data){
       let datas=Object.assign(data,{areaId:'a01'});

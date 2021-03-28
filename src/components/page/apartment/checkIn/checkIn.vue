@@ -92,7 +92,7 @@
                 <p>{{ k }}</p>
                 <el-row :gutter="15">
                     <el-col :span="4" style="margin-top: 10px" v-for="(a, b) in v" :key="b">
-                        <el-card shadow="hover" class="roomDiv" v-if="a.roomName.substring(0, 1) != '7'">
+                        <el-card shadow="hover" class="roomDiv" >
                             <div class="roomTop" :class="{ fan2: a.roomType == '20-01', fan1: a.roomType == '20-02' }">
                                 <p>{{ a.roomName }}房间</p>
                                 <div
@@ -125,49 +125,29 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="roomBot" v-if="a.consumers && a.consumers.length > 0">
-                                <div class="chuang" v-if="a.consumers[0]">
-                                    <p>
-                                        <span>1号床位</span>
-                                        <img src="../../../../assets/img/nan.png" v-if="a.consumers[0].consumerSex == '男'" />
-                                        <img src="../../../../assets/img/nv.png" v-if="a.consumers[0].consumerSex == '女'" />
-                                    </p>
-                                    <div class="yajin">
+                            <div class="roomBot" v-if="a.useState!='9'">
+                                <div class="chuang" v-for="(bed,y) in a.beds" :key="y">
                                         <p>
-                                            <span style="padding-right: 4px">{{ a.consumers[0].consumerName }}</span>
-                                            <span class="yjIcon" v-if="a.consumers[0].deposit">押</span>
+                                            <span>{{bed.name}}号床位</span>
+                                            <img src="../../../../assets/img/nan.png" v-if="bed.consumerList && bed.consumerList[0].consumerSex == '男'" />
+                                            <img src="../../../../assets/img/nv.png" v-if="bed.consumerList && bed.consumerList[0].consumerSex == '女'" />
+                                            <img src="../../../../assets/img/doing.png" v-if="bed.state == 2"/>
                                         </p>
-                                    </div>
-                                    <div class="roomBtn">
-                                        <p class="tf" @click="backRoom(a, 0)">退房</p>
-                                    </div>
-                                </div>
-                                <div class="xian"></div>
-                                <div class="chuang" v-if="a.consumers[1]">
-                                    <p>
-                                        <span>2号床位</span>
-                                        <img src="../../../../assets/img/nan.png" v-if="a.consumers[1].consumerSex == '男'" />
-                                        <img src="../../../../assets/img/nv.png" v-if="a.consumers[1].consumerSex == '女'" />
-                                    </p>
-                                    <div class="yajin">
-                                        <span style="padding-right: 4px">{{ a.consumers[1].consumerName }}</span>
-                                        <span class="yjIcon" v-if="a.consumers[1].deposit">押</span>
-                                    </div>
-                                    <div class="roomBtn">
-                                        <p class="tf" @click="backRoom(a, 1)">退房</p>
-                                    </div>
-                                </div>
-                                <div class="chuang" v-if="!a.consumers[1]">
-                                    <p>
-                                        <span>2号床位</span>
-                                    </p>
-                                    <div class="yajin"></div>
-                                    <div class="roomBtn">
-                                        <p class="ruzhu" @click="moveInto(a, 1)" v-show="a.useState == 0 || a.useState == 1">入住</p>
-                                    </div>
+                                        <div class="yajin" v-if="bed.consumerList">
+                                            <p>
+                                                <span style="padding-right: 4px">{{ bed.consumerList[0].consumerName }}</span>
+                                                <span class="yjIcon" v-if="bed.deposit">押</span>
+                                            </p>
+                                        </div>
+                                        <div class="roomBtn">
+                                            <p class="tf" v-if="bed.state == 1" @click="backRoom(a, bed)">退房</p>
+                                        </div>
                                 </div>
                             </div>
-                            <div class="roomBot" v-if="(!a.consumers || a.consumers.length == 0) && a.useState != '9'">
+                            <div class="roomBtn">
+                                <p v-if="a.useState=='0' || a.useState=='1'" class="ruzhu" @click="moveInto(a, 1)">办理入住</p>
+                            </div>
+                            <!-- <div class="roomBot" v-if="(!a.consumers || a.consumers.length == 0) && a.useState != '9'">
                                 <div class="chuang">
                                     <p>
                                         <span>1号床位</span>
@@ -191,8 +171,8 @@
                                         <p class="ruzhu" @click="moveInto(a, 1)" v-show="a.useState == 0 || a.useState == 1">入住</p>
                                     </div>
                                 </div>
-                            </div>
-                            <div v-if="a.useState == '9'" style="height:108px;overflow-y:auto">
+                            </div> -->
+                            <div v-if="a.useState == '9'" style="height:94px;overflow-y:auto">
                                 <p style="color:#333;font-size:14px;text-align:center;margin-top:15px;">{{a.remark}}</p>
                             </div>
                             <!-- <div class="roomBG">
@@ -222,7 +202,7 @@
                                 </p>
                             </div> -->
                         </el-card>
-                        <el-card shadow="hover" class="roomDiv" v-if="a.roomName.substring(0, 1) == '7'">
+                        <!-- <el-card shadow="hover" class="roomDiv" v-if="a.roomName.substring(0, 1) == '7'">
                             <div class="roomTop" :class="{ fan2: a.roomType == '20-01', fan1: a.roomType == '20-02' }">
                                 <p>{{ a.roomName }}房间</p>
                                 <div
@@ -233,7 +213,7 @@
                                     @mouseleave="a.useState == '3'||a.useState == '9' || a.useState == '0'?twoleave(a):''"
                                 >
                                     <span v-if="a.useState == '0'">空闲</span>
-                                    <span v-if="a.useState == '1'">满员</span>
+                                    <span v-if="a.useState == '2'">满员</span>
                                     <span v-if="a.useState == '3'">待打扫</span>
                                     <span v-if="a.useState == '9'">不可用</span>
 
@@ -286,7 +266,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </el-card>
+                        </el-card> -->
                     </el-col>
                 </el-row>
             </div>
@@ -418,6 +398,18 @@ export default {
             }
             RoomService.getRoomWithFloor(datas).then((res) => {
                 this.roomList = res;
+                for(let key in this.roomList){
+                    for(let x=0;x<this.roomList[key].length;x++){
+                        console.log(this.roomList[key])
+                        if((!this.roomList[key][x].beds || this.roomList[key][x].beds.length == 0) && this.roomList[key][x].bedNum!=0){
+                            this.roomList[key][x].beds = [];
+                            for(let y=0;y<this.roomList[key][x].bedNum;y++){
+                                this.roomList[key][x].beds.push({'deposit': 0,'name': y+1,'state': "0"});
+                            }
+                        }
+                    }
+                }
+                console.log(this.roomList);
             });
         },
         unbindCardDev(cid, did) {
@@ -442,37 +434,34 @@ export default {
         },
 
         // 退房(退押金)
-        backRoom(d, x) {
+        backRoom(d, bed) {
             this.roomData = d;
             this.$prompt('请输入退还押金金额,并退房！', '提示', {
                 confirmButtonText: '退房退押金',
                 cancelButtonText: '只退房',
                 inputPattern: /^[0-9]*$/,
                 inputErrorMessage: '请输入正确的数字',
-                inputValue:d.consumers[x].deposit,
+                inputValue:bed.deposit,
                 }).then(({ value }) => {
-                    console.log(value)
-                    console.log(d);
-                    if(d.consumers[x].deposit<Number(value)){
+                    if(bed.deposit<Number(value)){
                         this.$message.warning('输入的金额大于押金!');
                     }else{
-                        console.log('else');
-                            this.backRoomT(d,x,1,value);
+                        this.backRoomT(d,bed,1,value);
                         
                     }
                 }).catch(() => {
-                    this.backRoomT(d,x,2);
+                    this.backRoomT(d,bed,2);
             });
             
         },
         // 退房
-       async backRoomT(d,x,t,v){
+       async backRoomT(d,bed,t,v){
             // this.$confirm('是否确定退房?', '提示', {
             //     confirmButtonText: '确定',
             //     cancelButtonText: '取消',
             //     type: 'warning'
             // }).then(async () => {
-                let contractId = await this.findContract(d.roomId, x);
+                let contractId = bed.contractId;
                 let dat;
                 if(t == 1){
                     dat={'contractId':contractId,'deposit':Number(v)};
@@ -543,38 +532,18 @@ export default {
             if (data[0] == 'ok') {
                 if (data[1] == 1) {
                     this.ccontractId = data[3];
-                    if (this.roomData.consumers) {
-                        this.roomData.consumers.push(data[2][0]);
-                    } else {
-                        this.roomData.consumers = [];
-                        this.roomData.consumers.push(data[2][0]);
-                    }
-                    if (this.roomData.consumers.length == 1) {
-                        this.roomData.useState = 1;
-                    } else {
-                        this.roomData.useState = 2;
-                    }
+                    this.roomData.beds = data[2].beds;
+                    this.roomData.state = data[2].useState;
+                    this.$forceUpdate();
                 }
-
-                //this.find();
             } else if (data[0] == 'close') {
             } else {
                 if (data[1] == 1) {
                     this.ccontractId = data[3];
-                    if (this.roomData.consumers) {
-                        this.roomData.consumers.push(data[2][0]);
-                    } else {
-                        this.roomData.consumers = [];
-                        this.roomData.consumers.push(data[2][0]);
-                    }
-                    if (this.roomData.consumers.length == 1) {
-                        this.roomData.useState = 1;
-                    } else {
-                        this.roomData.useState = 2;
-                    }
+                    this.roomData.beds = data[2].beds;
+                    this.roomData.state = data[2].useState;
+                    this.$forceUpdate();
                 }
-
-                //this.find();
                 this.meakCard(this.roomData, data[3]);
             }
             this.roomShow = false;
@@ -630,8 +599,8 @@ export default {
                     type: 'warning'
                 }).then(async () => {
                     let data = {
-                        roomId: a.roomId,
-                        useState: 0
+                        roomIds: a.roomId,
+                        state: 0
                     };
                     RoomService.updateRoom(data).then((res) => {
                         if (res.status == 0) {
@@ -641,30 +610,14 @@ export default {
                     });
                 });
             }else if(x == 2){
-                // this.$confirm('确定将房间不可用?', '提示', {
-                //     confirmButtonText: '确定',
-                //     cancelButtonText: '取消',
-                //     type: 'warning'
-                // }).then(async () => {
-                //     let data = {
-                //         roomId: a.roomId,
-                //         useState: 9
-                //     };
-                //     RoomService.updateRoom(data).then((res) => {
-                //         if (res.status == 0) {
-                //             this.$message.success('该房间不可用！');
-                //             this.roomData.useState = 9;
-                //         }
-                //     });
-                // });
                 this.$prompt('确定房间不可用?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 inputPlaceholder: '请填写备注',
                 }).then(({ value }) => {
                     let data = {
-                        roomId: a.roomId,
-                        useState: 9,
+                        roomIds: a.roomId,
+                        state: 9,
                         remark: value
                     };
                     RoomService.updateRoom(data).then((res)=>{
@@ -682,8 +635,8 @@ export default {
                     type: 'warning'
                 }).then(async () => {
                     let data = {
-                        roomId: a.roomId,
-                        useState: 0
+                        roomIds: a.roomId,
+                        state: 0
                     };
                     RoomService.updateRoom(data).then((res) => {
                         if (res.status == 0) {
@@ -699,8 +652,8 @@ export default {
                     type: 'warning'
                 }).then(async () => {
                     let data = {
-                        roomId: a.roomId,
-                        useState: 3
+                        roomIds: a.roomId,
+                        state: 3
                     };
                     RoomService.updateRoom(data).then((res) => {
                         if (res.status == 0) {
@@ -716,8 +669,8 @@ export default {
                     type: 'warning'
                 }).then(async () => {
                     let data = {
-                        roomId: a.roomId,
-                        useState: 3
+                        roomIds: a.roomId,
+                        state: 3
                     };
                     RoomService.updateRoom(data).then((res) => {
                         if (res.status == 0) {
@@ -733,8 +686,8 @@ export default {
                 inputPlaceholder: '请填写备注',
                 }).then(({ value }) => {
                     let data = {
-                        roomId: a.roomId,
-                        useState: 9,
+                        roomIds: a.roomId,
+                        state: 9,
                         remark: value
                     };
                     RoomService.updateRoom(data).then((res)=>{
@@ -745,19 +698,6 @@ export default {
                         }
                     })
                 }).catch(() => {});
-                // this.$confirm('确定房间不可用?', '提示', {
-                //     confirmButtonText: '确定',
-                //     cancelButtonText: '取消',
-                //     type: 'warning'
-                // }).then(async () => {
-                //     let data = {
-                //         roomId: a.roomId,
-                //         useState: 9
-                //     };
-                //     RoomService.updateRoom(data).then((res) => {
-                        
-                //     });
-                // });
             }
             
         },
@@ -874,6 +814,7 @@ export default {
     display: flex;
     justify-content: space-around;
     color: #333;
+    height: 94px;
 }
 .xian {
     width: 1px;
@@ -900,8 +841,8 @@ export default {
 .roomBtn {
     display: flex;
     justify-content: center;
-    margin-bottom: 15px;
     height: 25px;
+    margin-top: 5px;
 }
 .roomBtn > p {
     color: #538add;

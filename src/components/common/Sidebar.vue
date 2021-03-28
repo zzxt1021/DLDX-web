@@ -116,25 +116,29 @@ export default {
                         },
                     ]
                 },
-                // {
-                //     icon: 'el-icon-lx-calendar',
-                //     index: '5',
-                //     title: '系统',
-                //     subs: [
-                //         {
-                //             index: '/system/staffManagement',
-                //             title: '员工管理'
-                //         },
-                //         {
-                //             index: '/system/positionManagement',
-                //             title: '岗位管理'
-                //         },
-                //         {
-                //             index: '/system/dataDictionary',
-                //             title: '数据字典'
-                //         },
-                //     ]
-                // },
+                {
+                    icon: 'el-icon-lx-calendar',
+                    index: '5',
+                    title: '系统',
+                    subs: [
+                        {
+                            index: '/system/staffManagement',
+                            title: '员工管理'
+                        },
+                        {
+                            index: '/system/positionManagement',
+                            title: '岗位管理'
+                        },
+                        // {
+                        //     index: '/system/dataDictionary',
+                        //     title: '数据字典'
+                        // },
+                        {
+                            index: '/system/roomManage',
+                            title: '房型管理'
+                        },
+                    ]
+                },
             ]
         };
     },
