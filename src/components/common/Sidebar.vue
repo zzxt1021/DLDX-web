@@ -125,10 +125,10 @@ export default {
                             index: '/system/staffManagement',
                             title: '员工管理'
                         },
-                        {
-                            index: '/system/positionManagement',
-                            title: '岗位管理'
-                        },
+                        // {
+                        //     index: '/system/positionManagement',
+                        //     title: '岗位管理'
+                        // },
                         // {
                         //     index: '/system/dataDictionary',
                         //     title: '数据字典'

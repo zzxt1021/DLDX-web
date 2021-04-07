@@ -51,6 +51,16 @@
                                 </el-row>
                             </el-col>
                         </el-row>
+                        <el-row class="htp">
+                            <el-col :span="12">
+                                <el-row>
+                                    <el-col :span="5">可入住床数：</el-col>
+                                    <el-col :span="16">
+                                        <el-input v-model="oData.bedNum" disabled></el-input>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-row>
                         <el-row class="htp" v-if="oData.roomType!='20'">
                             <el-col :span="12">
                                 <el-row>

@@ -57,12 +57,7 @@
                                 <span v-if="scope.row.buildingType3Name">-{{ scope.row.buildingType3Name }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="房间类型" align="center">
-                            <template slot-scope="scope">
-                                <p v-if="scope.row.roomType == '20-01'">标准间</p>
-                                <p v-if="scope.row.roomType == '20-02'">大床房</p>
-                            </template>
-                        </el-table-column>
+                        <el-table-column label="房间类型" prop="roomTypeName" align="center"></el-table-column>
                         <el-table-column prop="square" label="面积" align="center"> </el-table-column>
                         <el-table-column label="操作" width="140" align="center">
                             <template slot-scope="scope">

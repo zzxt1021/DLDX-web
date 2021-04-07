@@ -16,9 +16,14 @@
             <el-table :data="tableData" border style="width: 100%" v-loading="loading" :header-cell-style="rowStyle">
                 <el-table-column type="index" width="80" align="center"></el-table-column>
                 <el-table-column label="房型名称" prop="name" align="center"></el-table-column>
+                <el-table-column label="可入住床数" align="center">
+                    <template slot-scope="scope">
+                        <p>{{JSON.parse(scope.row.value)?JSON.parse(scope.row.value).bedNum:''}}</p>
+                    </template>
+                </el-table-column>
                 <el-table-column label="资费" align="center">
                     <template slot-scope="scope">
-                        <p v-for="(v, x) in JSON.parse(scope.row.value)" :key="x">
+                        <p v-for="(v, x) in JSON.parse(scope.row.value)?JSON.parse(scope.row.value).priceList:[]" :key="x">
                             <span>计费方式：{{ v.name }}</span>
                             <span style="padding-left: 20px">价格：{{ v.price }}/元</span>
                             <span style="padding-left: 20px">押金：{{ v.deposit }}元</span>
@@ -64,6 +69,7 @@ export default {
         // 新增
         add() {
             this.show = true;
+            this.cdata = {};
         },
         // 编辑
         edit(da) {

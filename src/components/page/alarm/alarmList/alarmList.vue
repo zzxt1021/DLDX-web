@@ -33,7 +33,7 @@
                     <div class="filterBox">
                         <p>告警等级</p>
                         <div>
-                            <el-select v-model="value" placeholder="请选择">
+                            <el-select v-model="alarmLevel" placeholder="请选择">
                                 <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                             </el-select>
                         </div>
@@ -52,19 +52,32 @@
                         <el-table-column label="告警内容" align="center">
                             <template slot-scope="scope">
                                 <p class="contp">
-                                    <span class="yz">严重</span>
-                                    <span class="tx">提醒</span>
+                                    <span class="yz" v-if="scope.row.alarmLevel == 3">严重</span>
+                                    <span class="tx" v-if="scope.row.alarmLevel == 2">一般</span>
+                                    <span class="tx2" v-if="scope.row.alarmLevel == 1">提示</span>
                                     <span>{{scope.row.roomName}}房间&nbsp;{{contentBack(scope.row.alarmContent)}}</span>
                                 </p>
                             </template>
                         </el-table-column>
                         <el-table-column prop="alarmTime" label="告警时间" align="center"></el-table-column>
                         <el-table-column prop="roomName" label="房间号" align="center"></el-table-column>
-                        <el-table-column label="告警状态" align="center"></el-table-column>
+                        <el-table-column label="告警状态" align="center">
+                            <template slot-scope="scope">
+                                <p v-if="scope.row.alarmState == 1">待处理</p>
+                                <p v-if="scope.row.alarmState == 2">处理完成</p>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="处理信息" align="center">
+                            <template slot-scope="scope">
+                                <div v-if="scope.row.alarmState == 2">
+                                    <p>处理人：</p>
+                                    <p>备注：</p>
+                                </div>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="操作" width="120" align="center">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="handle(scope.row)">处理</el-button>
-                                <el-button type="text" size="small" @click="check(scope.row)">查看</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -97,9 +110,9 @@ export default {
     },
     data(){
         return{
-            options2:[{'label':'全部',value:''},{'label':'严重告警',value:'1'},{'label':'普通提示',value:'2'}],
+            options2:[{'label':'全部',value:''},{'label':'普通提示',value:'1'},{'label':'一般告警',value:'2'},{'label':'严重告警',value:'3'}],
             times:'',
-            value:'',
+            alarmLevel:'',
             pickerOptions:{
                 disabledDate(time) {
                     return time.getTime() > Date.now() 
@@ -156,6 +169,7 @@ export default {
                 alarm.beginTime =this.dateFormat("YYYY-mm-dd",new Date(this.times[0])) +' 00:00:00';
                 alarm.endTime =this.dateFormat("YYYY-mm-dd",new Date(this.times[1])) +' 23:59:59' ;
             }
+            alarm.alarmLevel = this.alarmLevel;
             AlarmService.getAlarmList({'page':page,'alarm':alarm}).then((res)=>{
                 this.tableData = res.dataList;
                 this.loading = false;
@@ -209,13 +223,17 @@ export default {
     justify-content: center;
 }
 .yz{
-    color: red;
-    border:1px solid red;
+    color: #ff1919;
+    border:1px solid #ff1919;
     border-radius: 4px;
 }
 .tx{
     color:#409EFF;
     border:1px solid #409EFF;
     border-radius: 4px;
+}
+.tx2{
+    color:#88a1c6;
+    border:1px solid #88a1c6;
 }
 </style>

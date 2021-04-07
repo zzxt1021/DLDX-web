@@ -12,7 +12,13 @@
                             <el-input v-model="name"></el-input>
                         </el-col>
                     </el-row>
-                    <el-row style="margin-top: 10px">
+                    <el-row style="margin-top:15px">
+                        <el-col :span="4">可入住床数</el-col>
+                        <el-col :span="16">
+                            <el-input v-model="bedNum" type="number"></el-input>
+                        </el-col>
+                    </el-row>
+                    <el-row style="margin-top: 15px">
                         <el-col :span="4">
                             <p style="text-align: center">&nbsp;</p>
                         </el-col>
@@ -94,14 +100,16 @@ export default {
             val: '',
             name: '', //房型名称
             valueList: [{}],
-            code: null
+            code: null,
+            bedNum:1
         };
     },
     mounted() {
         if (JSON.stringify(this.odata) != '{}') {
             this.name = this.odata.name;
-            this.valueList = JSON.parse(this.odata.value);
+            this.valueList = (JSON.parse(this.odata.value)).priceList;
             this.code = this.odata.code;
+            this.bedNum = (JSON.parse(this.odata.value)).bedNum;
         }
     },
     methods: {
@@ -120,6 +128,7 @@ export default {
             }
             if (this.valueList.length == 0) {
                 this.$message.warning('请填写资费要求');
+                return;
             } else {
                 for (let i = 0; i < this.valueList.length; i++) {
                     if (!(this.valueList[i].type && this.valueList[i].price && this.valueList[i].deposit)) {
@@ -133,7 +142,11 @@ export default {
                     }
                 }
             }
-            let pdata = { name: this.name, value: JSON.stringify(this.valueList), enable: 1, type: 20 };
+            if(this.bedNum<1){
+                this.$message.warning('请填写合理的床数');
+                return;
+            }
+            let pdata = { name: this.name, value: JSON.stringify({'bedNum':this.bedNum,'priceList':this.valueList}), enable: 1, type: 20 };
             if (this.code) {
                 pdata.code = this.code;
             }

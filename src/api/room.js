@@ -10,7 +10,10 @@ export const RoomService = {
     getRoomList(data){
         return request.sendPost('/base/room/list',data);
     },
-
+    // 查询列表中单个房间
+    getListRoom(id){
+      return request.sendGet('/base/room/new/'+id);
+    },
     // 根据房间查询所属设备
     getRoomDevices(data){
       return request.sendPost('/base/room/devices',data);
@@ -37,7 +40,10 @@ export const RoomService = {
     delRoom(data){
       return request.sendDelete('/base/room/remove',data);
     },
-
+    // 床打扫完成
+    cleanDed(data){
+      return request.sendPost('/base/room/clean',data);
+    },
     // 查询模板
     getRoomTemplate(data){
       return request.sendPost('/base/room-template/list',data);

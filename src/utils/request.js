@@ -61,6 +61,9 @@ service.interceptors.response.use(
         if (response.status === 200) {
             return response.data;
         } else {
+            if(response.status == 401){
+                this.$router.push('/login');
+            }
             Promise.reject(response);
         }
     },

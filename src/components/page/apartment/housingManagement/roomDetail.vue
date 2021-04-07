@@ -32,8 +32,7 @@
                                 <el-row :gutter="20">
                                     <el-col :span="8" style="text-align: right">房间类型：</el-col>
                                     <el-col :span="12">
-                                        <p v-if="odata.roomType == '20-01'">标准间</p>
-                                        <p v-if="odata.roomType == '20-02'">双人床</p>
+                                        <p>{{odata.roomTypeName}}</p>
                                     </el-col>
                                 </el-row>
                             </el-col>
@@ -42,6 +41,16 @@
                                     <el-col :span="8" style="text-align: right">面积：</el-col>
                                     <el-col :span="12">
                                         {{ odata.square }}
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-row>
+                        <el-row class="htp">
+                            <el-col :span="11">
+                                <el-row :gutter="20">
+                                    <el-col :span="8" style="text-align: right">可入住床数：</el-col>
+                                    <el-col :span="12">
+                                        <p>{{odata.bedNum}}</p>
                                     </el-col>
                                 </el-row>
                             </el-col>

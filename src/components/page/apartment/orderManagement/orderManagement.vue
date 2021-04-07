@@ -101,16 +101,15 @@
                         </el-table-column>
                         <el-table-column label="房间类型" align="center">
                             <template slot-scope="scope">
-                                <span v-if="scope.row.roomDto.roomType == '20-01'">标准间</span>
-                                <span v-if="scope.row.roomDto.roomType == '20-02'">大床房</span>
+                                <span>{{scope.row.roomDto.roomTypeName}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column label="入住时间" align="center" prop="contract.checkInTime" width="140"></el-table-column>
                         <el-table-column label="押金" align="center" width="100">
                             <template slot-scope="scope">
                                 <div style="display:flex;justify-content:center">
-                                    <p>{{ scope.row.consumerList[0].deposit ? scope.row.consumerList[0].deposit : 0 }}</p>
-                                    <p class="tuiIcon" v-if="scope.row.consumerList[0].deposit && scope.row.contract.contractState == '4'" @click="backDes(scope.row)">退</p>
+                                    <p>{{ scope.row.contract.deposit ? scope.row.contract.deposit : 0 }}</p>
+                                    <p class="tuiIcon" v-if="scope.row.contract.deposit && scope.row.contract.contractState == '4'" @click="backDes(scope.row)">退</p>
                                 </div>
                                 
                             </template>

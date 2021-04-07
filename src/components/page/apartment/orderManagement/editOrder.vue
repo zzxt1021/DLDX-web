@@ -7,15 +7,27 @@
                 </div>
                 <el-form label-width="120px">
                     <el-form-item label="入租人">
-                        <el-row style="margin-bottom: 10px" v-for="(c,x) in consumerList" :key="x">
-                            <el-col :span="6" class="czr">
-                                <el-input v-model="c['consumerName']" placeholder="请填写入住人姓名" disabled></el-input>
+                        <el-row style="margin-bottom: 10px" v-for="(c, x) in consumerList" :key="x">
+                            <el-col :span="5" class="czr">
+                                <el-input
+                                    v-model="c['consumerName']"
+                                    placeholder="请填写入住人姓名"
+                                ></el-input>
                             </el-col>
-                            <el-col :span="12" :offset="1">
-                                <el-input v-model="c['consumerNo']" placeholder="请填写入住人身份证" disabled></el-input>
+                            <el-col :span="9" :offset="1">
+                                <el-input
+                                    v-model="c['consumerNo']"
+                                    placeholder="请填写入住人身份证"
+                                ></el-input>
+                            </el-col>
+                            <el-col :span="4">
+                                <div style="display:flex">
+                                    <p class="hzr" style="margin-left:10px" @click="ReadIDCard">读取证件</p>
+                                    <p class="hzr" style="margin-left:10px" @click="randomNum">随机</p>
+                                </div>
                             </el-col>
                             <el-col :span="4" :offset="1">
-                                <el-radio-group v-model="c.consumerSex" size="medium" disabled>
+                                <el-radio-group v-model="c.consumerSex" size="medium" >
                                     <el-radio-button label="男"></el-radio-button>
                                     <el-radio-button label="女"></el-radio-button>
                                 </el-radio-group>
@@ -24,11 +36,10 @@
                     </el-form-item>
                     <el-form-item label="预留手机号">
                         <el-row>
-                            <el-col :span="6" v-for="(c,x) in consumerList" :key="x">
-                                <el-input v-model="c.consumerTel" placeholder="请填写入住人手机号" disabled></el-input>
+                            <el-col :span="6" v-for="(c, x) in consumerList" :key="x">
+                                <el-input v-model="c.consumerTel" placeholder="请填写入住人手机号"></el-input>
                             </el-col>
                         </el-row>
-                        
                     </el-form-item>
                     <el-form-item label="房间类型">
                         <div class="timeDiv">
@@ -66,7 +77,7 @@
                                     start-placeholder="开始日期"
                                     end-placeholder="结束日期"
                                     :picker-options="isDisabled"
-                                    :default-time="['00:00:00','15:00:00']"
+                                    :default-time="['00:00:00', '15:00:00']"
                                 >
                                 </el-date-picker>
                             </div>
@@ -78,7 +89,10 @@
                     </el-form-item>
                     <el-form-item label="押金">
                         <div class="timeDiv">
-                            <el-input v-model="oData.deposit" disabled style="width:220px"></el-input>
+                            <el-input
+                                v-model="oData.contract.deposit"
+                                style="width: 220px"
+                            ></el-input>
                             <span style="padding-left: 10px">元</span>
                         </div>
                     </el-form-item>
@@ -110,13 +124,13 @@ import roomChoice from './roomChoice';
 export default {
     name: 'editOrder',
     props: ['funx', 'oData'],
-    components:{
+    components: {
         roomChoice
     },
     data() {
         return {
             dialogVisible: true,
-            consumerList: {},
+            consumerList: [],
             roomType: '',
             times: '',
             etime: '',
@@ -131,11 +145,11 @@ export default {
                     return time.getTime() <= new Date().getTime() - 8.64e7;
                 }
             },
-            rshow:false,
+            rshow: false
         };
     },
     created() {
-        this.consumerList =  this.oData.consumerList;
+        this.consumerList = this.oData.consumerList.length == 0?[{}]:this.oData.consumerList;
         this.roomType = this.oData.roomDto.roomType;
         this.times = [this.oData.contract.reserveStartDate, this.oData.contract.reserveEndDate];
         this.etime = this.oData.contract.reserveEndDate;
@@ -148,18 +162,58 @@ export default {
         });
     },
     methods: {
-        save() {
-            let dc={ contract: { contractId: this.oData.contract.contractId, 'reserveEndDate': this.times[1] ,'reserveStartDate':this.times[0],} };
-            if(this.roomId){
-                dc.contract.roomId = this.roomId;
+        // 读取身份证
+        ReadIDCard:function(){
+            var ret = CertCtl.connect();
+            var conn = JSON.parse(ret);
+            if(conn.resultFlag != 0){
+                this.$message.warning("连接失败:"+conn.errorMsg);
+            }
+            ret = CertCtl.readCert();
+        
+            var cert  = JSON.parse(ret);
+            if(cert.resultFlag != 0){
+                this.$message.warning("readCert失败:"+cert.errorMsg);
             }else{
-                 dc.contract.roomId = this.oData.roomDto.roomId;
+                this.$message.success("读卡成功");
+                this.consumerList[0].consumerNo = cert.resultContent.certNumber;
+                this.consumerList[0].consumerName = cert.resultContent.partyName;
+                this.consumerList[0].consumerSex = cert.resultContent.gender == 1?'男':'女';
+                this.$forceUpdate();
+            }
+            ret = CertCtl.disconnect();
+            var disConn = JSON.parse(ret);
+            if(disConn.resultFlag != 0){
+                this.$message.warning("disconnect失败:"+disConn.errorMsg);
+            }
+        },
+        // 随机身份证号
+        randomNum:function(){
+            let timesNum = (new Date()).getTime();
+            var num=parseInt(Math.random()*100000);
+            this.consumerList[0].consumerNo = timesNum + String(num);
+            this.$forceUpdate();
+        },
+        save() {
+            let dc = {
+                contract: {
+                    contractId: this.oData.contract.contractId,
+                    reserveEndDate: this.times[1],
+                    reserveStartDate: this.times[0],
+                    deposit: this.oData.contract.deposit,
+                },
+                consumers:this.consumerList
+            };
+            if (this.roomId) {
+                dc.contract.roomId = this.roomId;
+            } else {
+                dc.contract.roomId = this.oData.roomDto.roomId;
             }
             RoomService.editOrder(dc).then((res) => {
-                if(res.status == 0){
+                if (res.status == 0) {
                     this.$message.success('编辑成功！');
                     this.$emit('funx', 'ok');
-                }else{
+                } else {
                     this.$message.error(res.message);
                 }
             });
@@ -173,12 +227,12 @@ export default {
             };
         },
         // 选择房间
-        choiceRoom(){
-            console.log(this.rshow)
+        choiceRoom() {
+            console.log(this.rshow);
             this.rshow = true;
         },
-        closer(d){
-            if(d!='close'){
+        closer(d) {
+            if (d != 'close') {
                 this.roomType = d.roomType;
                 this.roomName = d.roomName;
                 this.roomId = d.roomId;
@@ -255,6 +309,11 @@ export default {
     margin-left: 20px;
     color: #427fda;
     text-decoration: underline;
+    cursor: pointer;
+}
+.hzr {
+    text-decoration: underline;
+    color: #427fda;
     cursor: pointer;
 }
 </style>

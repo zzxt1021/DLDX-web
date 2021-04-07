@@ -71,9 +71,7 @@
                                         </div>
                                         <div>
                                             <p class="rn">{{a.roomName}}</p>
-                                            <p class="rt" v-if="a.roomType == '20-01'">标准间</p>
-                                            <p class="rt" v-if="a.roomType == '20-02'">大床房</p>
-                                            <p class="rt" v-if="a.roomType == '20'">工作间</p>
+                                            <p class="rt">{{a.roomTypeName}}</p>
                                         </div>
                                     </div>
                                 </el-card>
@@ -94,9 +92,7 @@
                                         </div>
                                         <div>
                                             <p class="rn">{{a.roomName}}</p>
-                                            <p class="rt" v-if="a.roomType == '20-01'">标准间</p>
-                                            <p class="rt" v-if="a.roomType == '20-02'">大床房</p>
-                                            <p class="rt" v-if="a.roomType == '20'">工作间</p>
+                                            <p class="rt">{{a.roomTypeName}}</p>
                                         </div>
                                     </div>
                                 </el-card>

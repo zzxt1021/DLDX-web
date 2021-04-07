@@ -47,6 +47,20 @@
                         </div>
                     </div>
                 </div>
+                <div class="markDiv" v-if="type==9">
+                    <div style="width:9.8%">有效时间：</div>
+                    <div style="width: 76.5%">
+                        <el-date-picker
+                                v-model="times"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                prefix-icon=""
+                            >
+                        </el-date-picker>
+                    </div>
+                </div>
                 <div class="markDiv">
                     <div>备注：</div>
                     <div style="width: 76.5%">
@@ -110,7 +124,8 @@ export default {
             roomNames: '',
             mark: '', //备注
             numDev: 0, //计数
-            numDevPer: 0 //设备查找
+            numDevPer: 0, //设备查找
+            times:[],
         };
     },
     mounted() {
@@ -208,9 +223,16 @@ export default {
             }
             return fmt;
         },
+        // 后台卡与设备绑定
         cardWithDevice(did, rid, rname, wid) {
-            let st = '0000-00-00 00:00';
-            let et = '0000-00-00 00:00';
+            let st,et;
+            if(this.times.length>0){
+                st = this.dateFormat('YYYY-mm-dd HH:MM', new Date(this.times[0]));
+                et = this.dateFormat('YYYY-mm-dd HH:MM', new Date(this.times[1]));
+            }else{
+                st = '0000-00-00 00:00';
+                et = '0000-00-00 00:00';
+            }
             EquipmentService.cardWithDevice({
                 cardId: this.writeVal,
                 //cardId: 'E995D194',
@@ -244,12 +266,20 @@ export default {
                 args: { userId: wid, openType: 3, nickName: this.userName }
             }).then(() => {});
         },
+        // 控客绑定
         upDevice(did, rid, rname) {
             if (!did) {
                 return;
             }
-            let st = '0000-00-00 00:00';
-            let et = '0000-00-00 00:00';
+            let st,et;
+            if(this.times.length>0){
+                st = this.dateFormat('YYYY-mm-dd HH:MM', new Date(this.times[0]));
+                et = this.dateFormat('YYYY-mm-dd HH:MM', new Date(this.times[1]));
+            }else{
+                st = '0000-00-00 00:00';
+                et = '0000-00-00 00:00';
+            }
+            
             EquipmentService.updateDevice({
                 deviceId: did,
                 action: 6,
