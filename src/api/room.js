@@ -97,6 +97,10 @@ export const RoomService = {
     checkContract(id){
       return request.sendGet('/room/contract/'+id);
     },
+    // 订单开票
+    checkInvoice(data){
+      return request.sendPost('/room/contract/invoice',data);
+    },
 
     //房间状态数量
     getRoomStatus(){

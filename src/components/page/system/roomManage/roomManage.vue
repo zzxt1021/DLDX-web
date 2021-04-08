@@ -63,6 +63,7 @@ export default {
     methods: {
         find() {
             SystemService.getSysCodePid('20').then((res) => {
+                console.log(res);
                 this.tableData = res;
             });
         },
@@ -79,7 +80,10 @@ export default {
         // 关闭新增界面
         closeRT(da) {
             this.show = false;
+            console.log(da);
             if (da == 'ok') {
+                console.log('进来');
+                this.tableData = [];
                 this.find();
             }
         },

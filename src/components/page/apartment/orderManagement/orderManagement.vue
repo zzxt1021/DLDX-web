@@ -411,7 +411,7 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(()=>{
-                RoomService.editOrder({
+                RoomService.checkInvoice({
                     contract: {
                         contractId: da.contract.contractId,
                         invoice: '1',

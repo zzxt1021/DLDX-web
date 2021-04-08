@@ -30,6 +30,23 @@ export const SystemService = {
     // 删除大楼/单元/楼层
     delBulidingTree(data){
       return request.sendDelete('/base/building/remove',data);
+    },
+
+    //查询部门
+    getDept(){
+      return request.sendGet('/system/dept');
+    },
+    //查询人员
+    getPeople(data){
+      return request.sendGet('/system/user/list',data)
+    },
+    // 编辑部门
+    editDept(data){
+      return request.sendPost('/system/dept/edit',data);
+    },
+    // 所有权限
+    allRole(){
+      return request.sendGet('/system/dept/role');
     }
      
 }

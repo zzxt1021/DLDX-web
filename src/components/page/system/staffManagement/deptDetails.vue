@@ -39,6 +39,7 @@
     </div>
 </template>
 <script>
+import {SystemService} from"../../../../api/system";
 export default {
     name: 'deptDetails',
     props: ['func'],
@@ -49,6 +50,11 @@ export default {
             textarea: '',
             options: []
         };
+    },
+    mounted(){
+        SystemService.allRole().then(()=>{
+            
+        })
     },
     methods: {
         handleClose: function () {

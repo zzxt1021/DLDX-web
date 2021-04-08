@@ -30,9 +30,10 @@
     </div>
 </template>
 <script>
+import {AlarmService} from"../../../../api/alarm"
 export default {
     name:'handle',
-    props:['func'],
+    props:['func','cdata'],
     data(){
         return{
             dialogVisible:true,
@@ -42,7 +43,12 @@ export default {
     },
     methods:{
         save(){
-
+            AlarmService.updateAlarm({'id':this.cdata.id,'dealUser':this.people,'dealDesc':this.mark,'dealType':4}).then((res)=>{
+                if(res.status == 0){
+                    this.$message.success('操作成功！');
+                    this.$emit('func','ok');
+                }
+            })
         },
         handleClose(){
             this.dialogVisible = false;

@@ -18,6 +18,7 @@ service.interceptors.request.use(
 );
 service.sendGet = (url, params) => {
     let token = localStorage.getItem('ms_token') || '';
+    let t = {t:new Date().getTime()};
     return service.request({
         url: baseUrl+url,
         method: 'GET',

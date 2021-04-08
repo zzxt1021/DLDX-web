@@ -61,23 +61,24 @@
                         </el-table-column>
                         <el-table-column prop="alarmTime" label="告警时间" align="center"></el-table-column>
                         <el-table-column prop="roomName" label="房间号" align="center"></el-table-column>
-                        <el-table-column label="告警状态" align="center">
+                        <el-table-column label="处理状态" align="center">
                             <template slot-scope="scope">
-                                <p v-if="scope.row.alarmState == 1">待处理</p>
-                                <p v-if="scope.row.alarmState == 2">处理完成</p>
+                                <p v-if="scope.row.dealType == 4">已处理</p>
+                                <p v-else>未处理</p>
                             </template>
                         </el-table-column>
                         <el-table-column label="处理信息" align="center">
                             <template slot-scope="scope">
-                                <div v-if="scope.row.alarmState == 2">
-                                    <p>处理人：</p>
-                                    <p>备注：</p>
+                                <div v-if="scope.row.dealType == 4">
+                                    <p>处理人：{{scope.row.dealUser}}</p>
+                                    <p>备注：{{scope.row.dealDesc}}</p>
                                 </div>
                             </template>
                         </el-table-column>
                         <el-table-column label="操作" width="120" align="center">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="handle(scope.row)">处理</el-button>
+                                <el-button type="text" size="small" @click="handle(scope.row)" v-if="scope.row.dealType != 4">处理</el-button>
+                                <el-button type="text" size="small" v-if="scope.row.dealType == 4">-</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -95,7 +96,7 @@
                     </el-pagination>
                 </div>
         </div>
-        <handlePage :data="checkData" v-if="showDo" @func="closeHandle"></handlePage>
+        <handlePage :cdata="checkData" v-if="showDo" @func="closeHandle"></handlePage>
     </div>
 </template>
 <script>
@@ -185,7 +186,10 @@ export default {
             this.showDo = true;
             this.checkData = dt;
         },
-        closeHandle(){
+        closeHandle(da){
+            if(da == 'ok'){
+                this.find();
+            }
             this.showDo = false;
         },
         //告警内容截取

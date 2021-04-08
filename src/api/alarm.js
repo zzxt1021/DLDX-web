@@ -9,4 +9,8 @@ export const AlarmService = {
     getAlarm(id) {
         return request.sendGet('/alarm/query/'+id);
     },
+    //处理告警
+    updateAlarm(data) {
+        return request.sendPost('/alarm/update',data);
+    },
 }

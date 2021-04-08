@@ -96,6 +96,7 @@
 <script>
 import deptDetails from "./deptDetails.vue";
 import peopleDetails from "./peopleDetails.vue";
+import {SystemService} from "../../../../api/system";
 export default {
     name:'staffManagement',
     components:{
@@ -124,7 +125,23 @@ export default {
             ],
         }
     },
+    mounted(){
+        //this.getDept();
+        this.getPeople();
+    },
     methods:{
+        // 获取部门
+        getDept(){
+            SystemService.getDept().then((res)=>{
+                console.log(res);
+            })
+        },
+        // 查询人员
+        getPeople(){
+            SystemService.getPeople({'deptId':'d0'}).then((res)=>{
+                console.log(res);
+            })
+        },
         rowStyle:function(){
             return {background:'#427FDA !important',color:'#fff !important'}
         },
