@@ -62,11 +62,11 @@
                     </el-row>
                     <el-form-item label="是否包房">
                         <el-radio-group v-model="contractType" size="medium" >
-                            <el-radio-button label="1">包房</el-radio-button>
+                            <el-radio-button label="1" :disabled="!okbf">包房</el-radio-button>
                             <el-radio-button label="2">不包房</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="收费标准" prop="fees">
+                    <!-- <el-form-item label="收费标准" prop="fees">
                         <div class="detailTable">
                             <div class="detailTablehd">
                                 <p></p>
@@ -84,7 +84,7 @@
                                 <p>{{ mo.deposit }}</p>
                             </div>
                         </div>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-form-item label="入住时间" prop="times">
                         <div class="timeDiv">
                             <div>
@@ -156,6 +156,17 @@ export default {
         roomChoice
     },
     data() {
+        let okbed = 0;
+        if(this.roomData.beds && this.roomData.beds.length>0){
+            let beds = this.roomData.beds ;
+            for(let x=0;x<beds.length;x++){
+                if(beds[x].state=='0'){
+                    okbed++
+                }
+            }
+        }else{
+            okbed = this.roomData.bedNum;
+        }
         return {
             consumerList:[{consumerSex:'男'}],// 入住人数组
             moneychecked: {}, //选中的收费标准
@@ -188,15 +199,21 @@ export default {
             contractType:'2',//2-床，1房
             paid:0,//房费
             deposit:0,//押金
-            
+            okbf:okbed == this.roomData.bedNum?true:false
         };
     },
     mounted() {
         // 收费标准
-        SystemService.getSysCodePid('22').then((res) => {
+        SystemService.getSysCodePid('20').then((res) => {
             for (let x = 0; x < res.length; x++) {
-                let v = JSON.parse(res[x].value);
-                this.moneyList.push({ rules: v.t == 'b' ? '按床收费' : '按房收费', money: v.p, deposit: v.y, checked: false });
+                if(res[x].code == this.roomData.roomType){
+                    this.moneyList = JSON.parse(res[x].value).priceList;
+                }
+            }
+            for(let q=0;q<this.moneyList.length;q++){
+                if(this.moneyList[q].type == 'r' && this.contractType == 1){
+                    this.moneychecked = this.moneyList[q];
+                }
             }
         });
     },
@@ -267,10 +284,9 @@ export default {
                 this.$message.warning("readCert失败:"+cert.errorMsg);
             }else{
                 this.$message.success("读卡成功");
-                this.consumerList[0].consumerNo = cert.resultContent.certNumber;
-                this.consumerList[0].consumerName = cert.resultContent.partyName;
-                this.consumerList[0].consumerSex = cert.resultContent.gender == 1?'男':'女';
-                this.$forceUpdate();
+                this.$set(this.consumerList[0],'consumerNo',cert.resultContent.certNumber);
+                this.$set(this.consumerList[0],'consumerName',cert.resultContent.partyName);
+                this.$set(this.consumerList[0],'consumerSex',cert.resultContent.gender == 1?'男':'女');
             }
             ret = CertCtl.disconnect();
             var disConn = JSON.parse(ret);
@@ -282,8 +298,7 @@ export default {
         randomNum:function(){
             let timesNum = (new Date()).getTime();
             var num=parseInt(Math.random()*100000);
-            this.consumerList[0].consumerNo = timesNum + String(num);
-            this.$forceUpdate();
+            this.$set(this.consumerList[0],'consumerNo',timesNum + String(num));
         },
         // 保存
         save: function () {
@@ -344,7 +359,6 @@ export default {
                 contract.contractState = 2;
             }
             RoomService.addOrder({ consumers: this.consumerList, contract: contract }).then((res) => {
-                console.log(res);
                 if (res.status == 0) {
                     this.$message.success('办理成功！');
                     if(contract.contractState == 1){
@@ -416,6 +430,13 @@ export default {
         }
     },
     watch: {
+        contractType:function(){
+            for(let q=0;q<this.moneyList.length;q++){
+                if((this.moneyList[q].type == 'r' && this.contractType == 1) || (this.moneyList[q].type == 'b' && this.contractType == 2)){
+                    this.moneychecked = this.moneyList[q];
+                }
+            }
+        },
         // 计算天数
         times: function () {
             if (this.times) {
@@ -429,7 +450,7 @@ export default {
         //计算预收金额
         changeData() {
             if (this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
-                this.paid = Number(this.days * this.moneychecked.money) ;
+                this.paid = Number(this.days * this.moneychecked.price) ;
                 this.deposit = Number(this.moneychecked.deposit)
             }
         }

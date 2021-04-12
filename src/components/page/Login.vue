@@ -71,6 +71,7 @@ export default {
                             localStorage.setItem('ms_username', res.data.userName);
                             localStorage.setItem('ms_token', res.data.token);
                             localStorage.setItem('ms_userid', res.data.userId);
+                            localStorage.setItem('roles',JSON.stringify(res.data.roles));
                             this.$router.push('/apartment/checkIn');
                             //this.$router.push('/overview');
                         }else{

@@ -143,8 +143,7 @@ export default {
         moneyList(){
             for(let x=0;x<this.roomTypeList.length;x++){
                 if(this.roomTypeList[x].code == this.oData.roomType){
-                    console.log(this.roomTypeList[x].value)
-                    return this.roomTypeList[x].value?JSON.parse(this.roomTypeList[x].value):[];
+                    return this.roomTypeList[x].value?JSON.parse(this.roomTypeList[x].value).priceList:[];
                 }
             }
             return [];

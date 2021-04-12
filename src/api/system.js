@@ -33,20 +33,36 @@ export const SystemService = {
     },
 
     //查询部门
-    getDept(){
-      return request.sendGet('/system/dept');
+    getDept(data){
+      return request.sendPost('/system/dept/list',data);
     },
     //查询人员
     getPeople(data){
-      return request.sendGet('/system/user/list',data)
+      return request.sendPost('/system/user/list',data)
+    },
+    // 编辑人员
+    editPeople(data){
+      return request.sendPost('/system/user/edit',data)
+    },
+    // 删除人员
+    delUser(data){
+      return request.sendPost('/system/user/remove',data);
     },
     // 编辑部门
     editDept(data){
       return request.sendPost('/system/dept/edit',data);
     },
+    // 删除部门
+    delDept(data){
+      return request.sendPost('/system/dept/remove',data);
+    },
     // 所有权限
-    allRole(){
-      return request.sendGet('/system/dept/role');
+    allRole(did){
+      return request.sendGet('/system/dept/role/'+did);
+    },
+    // 修改权限
+    editRole(data){
+      return request.sendPost('/system/dept/addRole',data);
     }
      
 }

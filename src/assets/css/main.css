@@ -237,14 +237,30 @@ a {
 .el-tree-node:focus > .el-tree-node__content {
     background-color: #427fda !important;
     color: #fff !important;
-
     box-shadow: 0px 2px 5px 0px rgba(56, 87, 151, 0.5);
+}
+.el-tree-node:focus > .el-tree-node__content >.node-div{
+    color: #fff !important;
+}
+.el-tree-node:focus > .el-tree-node__content >.node-div .premove{
+    color: #f1f1f1 !important;
+}
+.el-tree-node:focus > .el-tree-node__content >.node-div .check{
+    color: #f1f1f1 !important;
 }
 .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
     background-color: #427fda !important;
     color: #fff !important;
-
     box-shadow: 0px 2px 5px 0px rgba(56, 87, 151, 0.5);
+}
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content>.node-div {
+    color: #fff !important;
+}
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content>.node-div .premove{
+    color: #f1f1f1 !important;
+}
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content>.node-div .check{
+    color: #f1f1f1 !important;
 }
 .el-tree-node__content {
     height: 32px !important;

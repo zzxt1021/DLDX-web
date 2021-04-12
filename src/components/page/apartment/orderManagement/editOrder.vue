@@ -50,7 +50,7 @@
                                 </el-select>
                             </div>
                             <p class="rmn">房间名称：{{ roomName }}</p>
-                            <p class="crm" v-if="contractState == 2 || contractState == 3" @click="choiceRoom">选择房间</p>
+                            <!-- <p class="crm" v-if="contractState == 2 || contractState == 3" @click="choiceRoom">选择房间</p> -->
                         </div>
                     </el-form-item>
                     <el-form-item label="入住时间" prop="times">
@@ -96,6 +96,15 @@
                             <span style="padding-left: 10px">元</span>
                         </div>
                     </el-form-item>
+                    <el-form-item label="房费">
+                        <div class="timeDiv">
+                            <el-input
+                                v-model="oData.contract.paid"
+                                style="width: 220px"
+                            ></el-input>
+                            <span style="padding-left: 10px">元</span>
+                        </div>
+                    </el-form-item>
                     <el-form-item label="备注">
                         <el-input type="textarea" :rows="3" placeholder="备注信息" v-model="remark"> </el-input>
                     </el-form-item>
@@ -123,7 +132,7 @@ import { RoomService } from '../../../../api/room';
 import roomChoice from './roomChoice';
 export default {
     name: 'editOrder',
-    props: ['funx', 'oData'],
+    props: ['funx', 'oData','isInromm'],
     components: {
         roomChoice
     },
@@ -176,10 +185,9 @@ export default {
                 this.$message.warning("readCert失败:"+cert.errorMsg);
             }else{
                 this.$message.success("读卡成功");
-                this.consumerList[0].consumerNo = cert.resultContent.certNumber;
-                this.consumerList[0].consumerName = cert.resultContent.partyName;
-                this.consumerList[0].consumerSex = cert.resultContent.gender == 1?'男':'女';
-                this.$forceUpdate();
+                this.$set(this.consumerList[0],'consumerNo',cert.resultContent.certNumber);
+                this.$set(this.consumerList[0],'consumerName',cert.resultContent.partyName);
+                this.$set(this.consumerList[0],'consumerSex',cert.resultContent.gender == 1?'男':'女');
             }
             ret = CertCtl.disconnect();
             var disConn = JSON.parse(ret);
@@ -191,8 +199,7 @@ export default {
         randomNum:function(){
             let timesNum = (new Date()).getTime();
             var num=parseInt(Math.random()*100000);
-            this.consumerList[0].consumerNo = timesNum + String(num);
-            this.$forceUpdate();
+            this.$set(this.consumerList[0],'consumerNo',timesNum + String(num));
         },
         save() {
             let dc = {
@@ -211,12 +218,36 @@ export default {
             }
             RoomService.editOrder(dc).then((res) => {
                 if (res.status == 0) {
-                    this.$message.success('编辑成功！');
-                    this.$emit('funx', 'ok');
+                    if(this.isInromm){
+                        RoomService.checkInRoom({ contractId: res.data.contractId }).then((red) => {
+                            if (red.status == '0') {
+                                this.$message.success('入住成功！');
+                                this.markSuccess();
+                            }
+                        });
+                    }else{
+                        this.$message.success('编辑成功！');
+                        this.$emit('funx', 'ok');
+                    }
+                   
                 } else {
                     this.$message.error(res.message);
                 }
             });
+        },
+        // 办理成功后，是否绑定卡
+        markSuccess:function(data){
+            this.$confirm('是否绑定门卡?', '提示', {
+                confirmButtonText: '绑定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(()=>{
+                this.dialogVisible = false;
+                this.$emit('funx', 'okcard');
+            }).catch(()=>{
+                this.dialogVisible = false;
+                this.$emit('funx', 'ok');
+            })
         },
         endDate() {
             const self = this;
@@ -228,7 +259,6 @@ export default {
         },
         // 选择房间
         choiceRoom() {
-            console.log(this.rshow);
             this.rshow = true;
         },
         closer(d) {
@@ -249,7 +279,6 @@ export default {
         // 计算天数
         times: function () {
             if (this.times) {
-                console.log(this.times);
                 let dateDiff = new Date(this.times[1]).getTime() - new Date(this.times[0]).getTime(); //时间差的毫秒数
                 let dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000)); //计算出相差天数
                 this.days = dayDiff;

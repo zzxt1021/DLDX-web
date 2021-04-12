@@ -89,8 +89,8 @@ export default {
         },
         // 删除
         del(da) {
-            this.$confirm('确定删除该房型?', '提示', {
-                confirmButtonText: '确定',
+            this.$confirm(`请在房源管理里查询确保没有该房型的房间,如果存在请先修改！`, '提示', {
+                confirmButtonText: '我已确认',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {

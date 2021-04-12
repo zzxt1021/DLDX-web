@@ -200,7 +200,7 @@
             :rname="checkData.roomDto.roomName"
             :contractId="checkData.contract.contractId"
         ></readCard>
-        <editOrder v-if="editShow" @funx="closeE" :oData="orderData"></editOrder>
+        <editOrder v-if="editShow" @funx="closeE" :oData="orderData" :isInromm="isInromm"></editOrder>
     </div>
 </template>
 <script>
@@ -239,7 +239,8 @@ export default {
             doShow: false,
             checkData: {},
             editShow: false, //编辑界面
-            orderData: {}
+            orderData: {},
+            isInromm:false,//办理入住
         };
     },
     mounted() {
@@ -318,25 +319,31 @@ export default {
         },
         // 办理
         doRoom(d) {
-            this.checkData = d;
+            //this.checkData = d;
             let dtt1 = new Date().getTime();
-            let dtt2 = new Date(this.checkData.contract.reserveStartDate.substring(0, 10)).getTime();
+            let dtt2 = new Date(d.contract.reserveStartDate).getTime();
             if (dtt1 < dtt2) {
                 this.$message.warning('未到预定时间不可办理入住！');
                 return;
             }
-            this.doShow = true;
+            let beds = JSON.parse(d.roomDto.bedInfo);
+            
+            this.orderData = d;
+            this.isInromm = true;
+            this.editShow = true;
+            for(let k=0;k<beds.length;k++){
+                    if(beds[k].state == 2){
+                        this.$confirm('该房间存在未打扫的床位！','提示',{
+                            confirmButtonText: '我已知晓',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        })
+                    }
+            }
+            //this.doShow = true;
         },
         readCardn(val) {
             this.doShow = false;
-            if (val != 'close') {
-                RoomService.checkInRoom({ contractId: this.checkData.contract.contractId }).then((res) => {
-                    if (res.r == '0') {
-                        this.$message.success('入住成功！');
-                        this.find();
-                    }
-                });
-            }
         },
         // 取消订单
         cancelRoom(d) {
@@ -369,6 +376,10 @@ export default {
         //关闭编辑
         closeE(d) {
             if (d != 'close') {
+                if(d == 'okcard'){
+                    this.doShow = true;
+                    this.checkData = this.orderData;
+                }
                 this.find();
             }
             this.editShow = false;
