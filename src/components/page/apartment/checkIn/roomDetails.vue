@@ -60,10 +60,17 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="团队名称">
+                                <el-input v-model="publicName" placeholder="请填写团队名称" style="margin-bottom:10px"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
                     <el-form-item label="是否包房">
                         <el-radio-group v-model="contractType" size="medium" >
                             <el-radio-button label="1" :disabled="!okbf">包房</el-radio-button>
-                            <el-radio-button label="2">不包房</el-radio-button>
+                            <el-radio-button label="2" :disabled="nobf">不包房</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
                     <!-- <el-form-item label="收费标准" prop="fees">
@@ -141,7 +148,7 @@
                 </el-footer>
             </el-container>
         </el-dialog>
-        <roomChoice v-if="rcShow" :hasCheck="false" :reservetime="times" @func="closeChoice"></roomChoice>
+        <roomChoice v-if="rcShow" :hasCheck="false" :reservetime="times" @func="closeChoice" :isbed="isbed"></roomChoice>
     </div>
 </template>
 <script>
@@ -199,7 +206,10 @@ export default {
             contractType:'2',//2-床，1房
             paid:0,//房费
             deposit:0,//押金
-            okbf:okbed == this.roomData.bedNum?true:false
+            okbf:okbed == this.roomData.bedNum?true:false,
+            isbed:'10',
+            nobf:this.roomData.bedNum == 1?true:false,//是否包房
+            publicName:'',//团队名称
         };
     },
     mounted() {
@@ -211,11 +221,14 @@ export default {
                 }
             }
             for(let q=0;q<this.moneyList.length;q++){
-                if(this.moneyList[q].type == 'r' && this.contractType == 1){
+                if((this.moneyList[q].type == 'b' && this.contractType == 2) || (this.moneyList[q].type == 'r' && this.contractType == 1)){
                     this.moneychecked = this.moneyList[q];
                 }
             }
         });
+        if(this.roomData.bedNum == 1){
+            this.contractType = 1;
+        }
     },
 
     methods: {
@@ -350,7 +363,8 @@ export default {
                 remark: this.remark,
                 deposit:this.deposit,
                 contractType:this.contractType,
-                paid:this.paid
+                paid:this.paid,
+                publicName:this.publicName
             };
             // 是否是预定的
             if (this.rtype == 1) {
@@ -361,11 +375,11 @@ export default {
             RoomService.addOrder({ consumers: this.consumerList, contract: contract }).then((res) => {
                 if (res.status == 0) {
                     this.$message.success('办理成功！');
-                    if(contract.contractState == 1){
+                    //if(contract.contractState == 1){
                          this.markSuccess(res.data);
-                    }else{
-                        this.$emit('func', 'ok',2);
-                    }
+                    //}else{
+                       // this.$emit('func', 'ok',2);
+                    //}
                 } else {
                     this.$message.warning(res.message);
                 }
@@ -436,6 +450,11 @@ export default {
                     this.moneychecked = this.moneyList[q];
                 }
             }
+            if(this.contractType == 1){
+                this.isbed = '0'
+            }else{
+                this.isbed = '10';
+            }
         },
         // 计算天数
         times: function () {
@@ -453,7 +472,7 @@ export default {
                 this.paid = Number(this.days * this.moneychecked.price) ;
                 this.deposit = Number(this.moneychecked.deposit)
             }
-        }
+        },
     }
 };
 </script>

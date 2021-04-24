@@ -167,6 +167,41 @@
             :contractId="ccontractId"
         ></readCard>
         <addConsumer v-if="addConShow" @funa="addConsumerClose" :roomData="roomData"></addConsumer>
+        <el-dialog :visible.sync="delShow" :before-close="handleClose" title="退房提示" width="20%" :close-on-click-modal="false">
+            <el-container>
+                <div>
+                    <p style="margin-bottom:10px;">请输入退还押金金额,并退房!</p>
+                    <el-input v-model="money"></el-input>
+                </div>
+                 <el-footer style="height: 40px; border-top: 1px solid #ccc">
+                    <div class="btnss" style="align-items:center;margin-top:20px">
+                        <el-button @click="delShow = false">取消</el-button>
+                        <el-button type="primary" @click="backRoomT(2)">只退房</el-button>
+                        <el-button type="primary" @click="backRoomT(1)">退房退押金</el-button>
+                        <!-- <p style="background: #427fda" @click="handleClose">
+                            <img src="../../../../assets/img/cha.png" />
+                            <span>取消</span>
+                        </p>
+                        <p @click="save">
+                            <img src="../../../../assets/img/gou.png" />
+                            <span></span>
+                        </p> -->
+                    </div>
+                </el-footer>
+            </el-container>
+        </el-dialog>
+        <!-- <el-dialog title="退房提示" width="20%" >
+            <div>
+                <el-input v-model="money"></el-input>
+            </div>
+            <template #footer>
+                <span class="dialog-footer">
+                <el-button @click="delShow = false">取 消</el-button>
+                <el-button type="primary" @click="backRoomT(2)">只退房</el-button>
+                <el-button type="primary" @click="backRoomT(1)">退房退押金</el-button>
+                </span>
+            </template>
+        </el-dialog> -->
     </div>
 </template>
 <script>
@@ -208,6 +243,9 @@ export default {
             ccontractId: '', //入住成功传过来的订单id
             wdsShow:false, // 未打扫状态界面
             enterDS:false,//是否进入二级页面
+            delShow:false,//删除弹框显示
+            money:'',
+            bedData:{},//床信息
         };
     },
     mounted() {
@@ -311,40 +349,35 @@ export default {
                 }
             }
         },
+        handleClose(){
+            this.delShow = false;
+        },
         // 退房(退押金)
         backRoom(d, bed) {
             this.roomData = d;
-            this.$prompt('请输入退还押金金额,并退房！', '提示', {
-                confirmButtonText: '退房退押金',
-                cancelButtonText: '只退房',
-                inputPattern: /^[0-9]*$/,
-                inputErrorMessage: '请输入正确的数字',
-                inputValue:bed.deposit,
-                }).then(({ value }) => {
-                    if(bed.deposit<Number(value)){
-                        this.$message.warning('输入的金额大于押金!');
-                    }else{
-                        this.backRoomT(d,bed,1,value);
-                        
-                    }
-                }).catch(() => {
-                    this.backRoomT(d,bed,2);
-            });
+            this.bedData = bed;
+            this.delShow = true;
+            this.money = bed.deposit;
             
         },
         // 退房
-       async backRoomT(d,bed,t,v){
-            let contractId = bed.contractId;
+       async backRoomT(t){
+           if(this.bedData.deposit<Number(this.money)){
+              this.$message.warning('输入的金额大于押金!');
+              return
+           }
+            let contractId = this.bedData.contractId;
             let dat;
             if(t == 1){
-                dat={'contractId':contractId,'deposit':Number(v)};
+                dat={'contractId':contractId,'deposit':Number(this.money)};
             }else if(t == 2){
                 dat={'contractId':contractId};
             }
             RoomService.checkOutRoomBad(dat).then(async(res) => {
                 if(res.status == 0){
                     this.$message.success('退房成功！');
-                    let roomDa = (await RoomService.getListRoom(d.roomId))[0];
+                    this.delShow = false;
+                    let roomDa = (await RoomService.getListRoom(this.roomData.roomId))[0];
                     this.roomData.useState =roomDa.useState;
                     this.roomData.beds = roomDa.beds;
                 }

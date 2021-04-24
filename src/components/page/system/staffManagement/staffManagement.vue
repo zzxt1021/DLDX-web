@@ -190,6 +190,7 @@ export default {
         },
         // 新增员工
         addPeople: function () {
+            this.pdata = null;
             this.peopleShow = true;
         },
         // 关闭员工页面

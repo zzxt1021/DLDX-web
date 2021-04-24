@@ -11,7 +11,7 @@
                 <div>
                     <el-row :gutter="20">
                         <el-col :span="16">
-                            <el-row :gutter="20" class="htp">
+                            <!-- <el-row :gutter="20" class="htp">
                                 <el-col :span="8" style="text-align: right; margin-top: 5px">上级部门</el-col>
                                 <el-col :span="14">
                                     <el-cascader
@@ -22,7 +22,7 @@
                                         style="width: 100%"
                                     ></el-cascader>
                                 </el-col>
-                            </el-row>
+                            </el-row> -->
                             <el-row :gutter="20" class="htp">
                                 <el-col :span="8" style="text-align: right; margin-top: 5px">部门名称</el-col>
                                 <el-col :span="14">
@@ -109,6 +109,7 @@ export default {
             if(this.odata.idPath){
                 this.lastdeptId = this.odata.idPath.split('.');
                 this.lastdeptId.pop();
+                console.log(this.lastdeptId);
             }
             this.dept= {...this.odata};
         }
@@ -128,10 +129,14 @@ export default {
                     idPath+='.'+this.odata.id;
                 }
             }else{
-                idPath = this.odata.id;
+                if(this.odata){
+                    idPath = this.odata.id;
+                }
+                
             }
             dept = Object.assign(this.dept, { parentCode, idPath });
             SystemService.editDept(dept).then((res) => {
+                console.log(res);
                 let deptId = res.data.id;
                 let mfIds = this.$refs.roleTree.getCheckedKeys().join();
                 SystemService.editRole({ deptId, mfIds }).then((res) => {

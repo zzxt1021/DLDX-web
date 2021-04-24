@@ -71,7 +71,8 @@
                                         </div>
                                         <div>
                                             <p class="rn">{{a.roomName}}</p>
-                                            <p class="rt">{{a.roomTypeName}}</p>
+                                            <p class="rt" v-if="a.roomType == '20'">工作间</p>
+                                            <p class="rt" v-else>{{a.roomTypeName}}</p>
                                         </div>
                                     </div>
                                 </el-card>
@@ -92,7 +93,8 @@
                                         </div>
                                         <div>
                                             <p class="rn">{{a.roomName}}</p>
-                                            <p class="rt">{{a.roomTypeName}}</p>
+                                            <p class="rt" v-if="a.roomType == '20'">工作间</p>
+                                            <p class="rt" v-else>{{a.roomTypeName}}</p>
                                         </div>
                                     </div>
                                 </el-card>
@@ -126,7 +128,7 @@ import { SystemService } from '../../../../api/system';
 import {RoomService} from '../../../../api/room';
 export default {
     name: 'roomChoicce',
-    props: ['func','hasCheck','roomIdss','roomName','reservetime'],
+    props: ['func','hasCheck','roomIdss','roomName','reservetime','isbed'],
     data() {
         return {
             dialogVisible: true,
@@ -191,7 +193,6 @@ export default {
             return fmt;
         },
         clickAll:function(){
-            console.log('测试');
             if(this.bhShow){
                 this.bhShow = false;
             }else{
@@ -221,8 +222,13 @@ export default {
                 endData = this.dateFormat('YYYY-mm-dd', new Date(this.times[1]));
             }
             let filterData =JSON.parse(JSON.stringify(this.filterData)) ;
+            // 工作间
             if(this.bhShow == true){
                 filterData.roomType ='20'
+            }
+            if(this.isbed){
+                console.log(this.isbed)
+                filterData.useState = this.isbed;
             }
             if (startDate && endData) {
                 datas = { room: filterData, startDate: startDate, endDate: endData };

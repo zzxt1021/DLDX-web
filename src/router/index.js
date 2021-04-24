@@ -77,6 +77,11 @@ export default new Router({
                             meta: { title: '门卡管理' }
                         },
                         {
+                            path: '/equipment/cardManagementcheck',
+                            component: () => import(/* webpackChunkName: "cardManagementcheck" */ '../components/page/equipment/cardManagement/cardManagementcheck.vue'),
+                            meta: { title: '门卡查询' }
+                        },
+                        {
                             path: '/equipment/energyConsumption',
                             component: () => import(/* webpackChunkName: "energyConsumption" */ '../components/page/equipment/energyConsumption/energyConsumption.vue'),
                             meta: { title: '能耗统计' }

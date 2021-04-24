@@ -56,7 +56,7 @@
                     <el-form-item label="入住时间" prop="times">
                         <div class="timeDiv">
                             <div v-if="contractState == 1">
-                                <el-date-picker class="date" v-model="times[0]" type="date" disabled> </el-date-picker>
+                                <el-date-picker class="date" v-model="times[0]" type="datetime" disabled> </el-date-picker>
                                 <span style="padding: 0 10px">至</span>
                                 <el-date-picker
                                     class="date"
@@ -171,6 +171,25 @@ export default {
         });
     },
     methods: {
+        // 格式化时间
+        dateFormat(fmt, date) {
+            let ret;
+            const opt = {
+                'Y+': date.getFullYear().toString(), // 年
+                'm+': (date.getMonth() + 1).toString(), // 月
+                'd+': date.getDate().toString(), // 日
+                'H+': date.getHours().toString(), // 时
+                'M+': date.getMinutes().toString(), // 分
+                'S+': date.getSeconds().toString() // 秒
+            };
+            for (let k in opt) {
+                ret = new RegExp('(' + k + ')').exec(fmt);
+                if (ret) {
+                    fmt = fmt.replace(ret[1], ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, '0'));
+                }
+            }
+            return fmt;
+        },
         // 读取身份证
         ReadIDCard:function(){
             var ret = CertCtl.connect();
@@ -202,6 +221,7 @@ export default {
             this.$set(this.consumerList[0],'consumerNo',timesNum + String(num));
         },
         save() {
+                console.log(this.times)
             let dc = {
                 contract: {
                     contractId: this.oData.contract.contractId,

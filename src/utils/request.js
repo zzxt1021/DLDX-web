@@ -20,7 +20,7 @@ service.sendGet = (url, params) => {
     let token = localStorage.getItem('ms_token') || '';
     let t = {t:new Date().getTime()};
     return service.request({
-        url: baseUrl+url,
+        url: baseUrl+url+'?t='+t.t,
         method: 'GET',
         headers:{
             'Content-Type':'application/json;charset=UTF-8',

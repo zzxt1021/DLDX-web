@@ -72,7 +72,7 @@ export default {
                             localStorage.setItem('ms_token', res.data.token);
                             localStorage.setItem('ms_userid', res.data.userId);
                             localStorage.setItem('roles',JSON.stringify(res.data.roles));
-                            this.$router.push('/apartment/checkIn');
+                            this.$router.push('/overview');
                             //this.$router.push('/overview');
                         }else{
                             this.$message.error('登录失败！');

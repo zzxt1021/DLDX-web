@@ -46,13 +46,19 @@
                         </div>
                     </div>
                     <div class="filterBox">
+                        <p>团队名称</p>
+                        <div>
+                            <el-input placeholder="请输入团队名称" v-model="contract.publicName"></el-input>
+                        </div>
+                    </div>
+                    <!-- <div class="filterBox">
                         <p>房间类型</p>
                         <div>
                             <el-select v-model="room.roomType" placeholder="请选择">
                                 <el-option v-for="item in roomTypeList" :key="item.code" :label="item.name" :value="item.code"> </el-option>
                             </el-select>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="btns">
                     <el-button type="primary" icon="el-icon-search" @click="findAll">查询</el-button>
@@ -79,16 +85,16 @@
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="订单人电话" align="center">
+                        <!-- <el-table-column label="订单人电话" align="center">
                             <template slot-scope="scope">
                                 <span v-for="(cn, k) in scope.row.consumerList" :key="cn.consumerNo">
                                     {{ cn.consumerTel }}
                                     <span v-if="k != scope.row.consumerList.length - 1">,</span>
                                 </span>
                             </template>
-                        </el-table-column>
-                        <el-table-column prop="roomDto.roomName" label="房间号" align="center"></el-table-column>
-                        <el-table-column label="房间位置" align="center">
+                        </el-table-column> -->
+                        <el-table-column prop="roomDto.roomName" label="房间号" align="center" ></el-table-column>
+                        <!-- <el-table-column label="房间位置" align="center">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.roomDto.buildingType1Name }}</span>
                                 <span v-if="scope.row.roomDto.buildingType2Name"
@@ -98,20 +104,23 @@
                                     >&nbsp;-&nbsp;{{ scope.row.roomDto.buildingType3Name }}</span
                                 >
                             </template>
-                        </el-table-column>
-                        <el-table-column label="房间类型" align="center">
+                        </el-table-column> -->
+                        <!-- <el-table-column label="房间类型" align="center">
                             <template slot-scope="scope">
                                 <span>{{scope.row.roomDto.roomTypeName}}</span>
                             </template>
-                        </el-table-column>
+                        </el-table-column> -->
                         <el-table-column label="入住时间" align="center" prop="contract.checkInTime" width="140"></el-table-column>
-                        <el-table-column label="押金" align="center" width="100">
+                        <el-table-column label="退房时间" align="center" prop="contract.checkOutTime" width="140"></el-table-column>
+                        <!-- <el-table-column label="房费" align="center" prop="contract.paid"></el-table-column> -->
+                        <el-table-column label="团队名称" align="center" prop="contract.publicName"></el-table-column>
+                        <el-table-column label="押金" align="center">
                             <template slot-scope="scope">
                                 <div style="display:flex;justify-content:center">
-                                    <p>{{ scope.row.contract.deposit ? scope.row.contract.deposit : 0 }}</p>
+                                    <p v-if="scope.row.contract.deposit">{{ scope.row.contract.deposit }}</p>
                                     <p class="tuiIcon" v-if="scope.row.contract.deposit && scope.row.contract.contractState == '4'" @click="backDes(scope.row)">退</p>
+                                    <p v-if="scope.row.contract.deduction">扣费：{{scope.row.contract.deduction}}</p>
                                 </div>
-                                
                             </template>
                         </el-table-column>
                         <el-table-column label="订单状态" align="center">
@@ -123,21 +132,21 @@
                                 <p v-if="scope.row.contract.contractState == '5'">已取消</p>
                             </template>
                         </el-table-column>
-                        <el-table-column label="开票状态" align="center">
+                        <!-- <el-table-column label="开票状态" align="center">
                             <template slot-scope="scope">
                                 <p v-if="scope.row.contract.invoice">已开票</p>
                                 <p v-else>未开票</p>
                             </template>
-                        </el-table-column>
+                        </el-table-column> -->
                         <el-table-column label="操作" width="155" align="center">
                             <template slot-scope="scope">
-                                <!-- <el-button type="text" size="small" @click="checkOrder(scope.row)">查看</el-button> -->
-                                <el-button
+                                <el-button type="text" size="small" @click="checkOrder(scope.row)">查看</el-button>
+                                <!-- <el-button
                                     type="text"
                                     size="small"
                                     v-if="scope.row.contract.contractState == '5'"
                                     >-</el-button
-                                >
+                                > -->
                                 <el-button
                                     type="text"
                                     size="small"
@@ -201,6 +210,7 @@
             :contractId="checkData.contract.contractId"
         ></readCard>
         <editOrder v-if="editShow" @funx="closeE" :oData="orderData" :isInromm="isInromm"></editOrder>
+        <checkOrder v-if="checkShow" @func="closeC" :odata="checkData"></checkOrder>
     </div>
 </template>
 <script>
@@ -209,12 +219,14 @@ import { RoomService } from '../../../../api/room';
 import roomDetails from '../checkIn/roomDetails';
 import readCard from '../checkIn/readCard';
 import editOrder from './editOrder';
+import checkOrder from './checkOrder.vue';
 export default {
     name: 'orderManagement',
     components: {
         roomDetails,
         readCard,
-        editOrder
+        editOrder,
+        checkOrder
     },
     data() {
         return {
@@ -241,6 +253,7 @@ export default {
             editShow: false, //编辑界面
             orderData: {},
             isInromm:false,//办理入住
+            checkShow:false,//查看界面
         };
     },
     mounted() {
@@ -316,6 +329,15 @@ export default {
         // 表头样式
         rowStyle: function () {
             return { background: '#427FDA !important', color: '#fff !important' };
+        },
+        // 查看
+        checkOrder(da){
+            this.checkData = da;
+            this.checkShow = true;
+            console.log(this.checkData)
+        },
+        closeC(){
+            this.checkShow = false;
         },
         // 办理
         doRoom(d) {

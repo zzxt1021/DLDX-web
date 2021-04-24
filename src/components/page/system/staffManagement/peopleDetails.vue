@@ -63,7 +63,7 @@
                     <el-row :gutter="20" class="htp">
                         <el-col :span="4" style="text-align: right; margin-top: 5px">备注</el-col>
                         <el-col :span="18">
-                            <el-input type="textarea" :rows="3" placeholder="请输入ID"></el-input>
+                            <el-input type="textarea" :rows="3" placeholder="请输入备注"></el-input>
                         </el-col>
                     </el-row>
                 </div>
@@ -111,7 +111,7 @@ export default {
                 this.$message.warning('请输入员工姓名');
                 return;
             }
-            if(this.deptList.length == 0){
+            if(this.deptIds.length == 0){
                 this.$message.warning('请选择所属部门');
                 return;
             }

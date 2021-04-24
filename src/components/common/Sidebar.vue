@@ -139,7 +139,9 @@ export default {
             //return this.$route.path.replace('/', '');
         },
         items(){
-            return JSON.parse(localStorage.getItem('roles'));
+            let rolesList = JSON.parse(localStorage.getItem('roles'));
+            rolesList.unshift({mfName:'首页',actionUrl:"/overview"});
+            return rolesList;
         }
     },
     created() {

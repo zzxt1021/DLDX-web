@@ -49,7 +49,7 @@
                 <template>
                     <el-table :data="tableData" border style="width: 100%" v-loading="loading" :header-cell-style="rowStyle">
                         <el-table-column type="index" width="80" align="center"></el-table-column>
-                        <el-table-column prop="roomName" label="房间名称" align="center"></el-table-column>
+                        <el-table-column label="房间名称" align="center" prop="roomName"></el-table-column>
                         <el-table-column label="父区域" align="center">
                             <template slot-scope="scope">
                                 <span>{{ scope.row.buildingType1Name }}</span>
@@ -57,7 +57,12 @@
                                 <span v-if="scope.row.buildingType3Name">-{{ scope.row.buildingType3Name }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="房间类型" prop="roomTypeName" align="center"></el-table-column>
+                        <el-table-column label="房间类型" align="center">
+                            <template slot-scope="scope">
+                                <p v-if="scope.row.roomType == '20'">工作间</p>
+                                <p v-else>{{scope.row.roomTypeName}}</p>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="square" label="面积" align="center"> </el-table-column>
                         <el-table-column label="操作" width="140" align="center">
                             <template slot-scope="scope">

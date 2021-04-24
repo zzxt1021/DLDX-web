@@ -15,7 +15,7 @@
                     <el-row style="margin-top:15px">
                         <el-col :span="4">可入住床数</el-col>
                         <el-col :span="16">
-                            <el-input v-model="bedNum" type="number"></el-input>
+                            <el-input v-model="bedNum" type="number" :disabled="odata.code"></el-input>
                         </el-col>
                     </el-row>
                     <el-row style="margin-top: 15px">
@@ -146,7 +146,7 @@ export default {
                 this.$message.warning('请填写合理的床数');
                 return;
             }
-            let pdata = { name: this.name, value: JSON.stringify({'bedNum':this.bedNum,'priceList':this.valueList}), enable: 1, type: 20 };
+            let pdata = { name: this.name, value: JSON.stringify({'bedNum':Number(this.bedNum),'priceList':this.valueList}), enable: 1, type: 20 };
             if (this.code) {
                 pdata.code = this.code;
             }

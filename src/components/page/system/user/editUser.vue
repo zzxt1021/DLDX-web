@@ -46,7 +46,7 @@ export default {
         }
     },
     mounted(){
-        this.userName = localStorage.getItem('ms_userid');
+        this.userName = localStorage.getItem('ms_username');
     },
     methods:{
         // 保存
@@ -60,8 +60,8 @@ export default {
                     return;
                 }
             }
-            LoginService.editUser({'userName':this.userName,'password':this.$md5(this.password+'zjgxhc')}).then((res)=>{
-                console.log(res);
+            let uid = localStorage.getItem('ms_userid');
+            LoginService.editUser({'id':uid,'password':this.$md5(this.password+'zjgxhc')}).then((res)=>{
                 if(res.status == 0){
                     this.$message.success('修改成功！');
                      this.$emit('func', 'ok');
