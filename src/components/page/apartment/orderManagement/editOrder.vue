@@ -34,17 +34,31 @@
                             </el-col>
                         </el-row>
                     </el-form-item>
-                    <el-form-item label="预留手机号">
-                        <el-row>
-                            <el-col :span="6" v-for="(c, x) in consumerList" :key="x">
-                                <el-input v-model="c.consumerTel" placeholder="请填写入住人手机号"></el-input>
-                            </el-col>
-                        </el-row>
-                    </el-form-item>
+                    <el-row >
+                        <el-col :span="12">
+                            <el-form-item label="预留手机号">
+                                <el-row>
+                                    <el-col :span="16" v-for="(c, x) in consumerList" :key="x">
+                                        <el-input v-model="c.consumerTel" placeholder="请填写入住人手机号"></el-input>
+                                    </el-col>
+                                </el-row>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="团队名称">
+                                <el-row>
+                                    <el-col :span="16">
+                                        <el-input v-model="publicName" placeholder="请填写团队名称"></el-input>
+                                    </el-col>
+                                </el-row>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    
                     <el-form-item label="房间类型">
                         <div class="timeDiv">
                             <div>
-                                <el-select v-model="roomType" placeholder="请选择" :disabled="contractState == 1">
+                                <el-select v-model="roomType" placeholder="请选择" :disabled="true">
                                     <el-option v-for="item in roomTypeList" :key="item.code" :label="item.name" :value="item.code">
                                     </el-option>
                                 </el-select>
@@ -53,10 +67,10 @@
                             <!-- <p class="crm" v-if="contractState == 2 || contractState == 3" @click="choiceRoom">选择房间</p> -->
                         </div>
                     </el-form-item>
-                    <el-form-item label="入住时间" prop="times">
+                    <el-form-item label="入住时间">
                         <div class="timeDiv">
                             <div v-if="contractState == 1">
-                                <el-date-picker class="date" v-model="times[0]" type="datetime" disabled> </el-date-picker>
+                                <el-date-picker class="date" v-model="times[0]" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" disabled> </el-date-picker>
                                 <span style="padding: 0 10px">至</span>
                                 <el-date-picker
                                     class="date"
@@ -66,6 +80,7 @@
                                     placeholder="结束时间"
                                     value-format="yyyy-MM-dd HH:mm:ss"
                                     :default-time="['15:00:00']"
+                                    :clearable='false'
                                 >
                                 </el-date-picker>
                             </div>
@@ -78,6 +93,8 @@
                                     end-placeholder="结束日期"
                                     :picker-options="isDisabled"
                                     :default-time="['00:00:00', '15:00:00']"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :clearable='false'
                                 >
                                 </el-date-picker>
                             </div>
@@ -90,7 +107,7 @@
                     <el-form-item label="押金">
                         <div class="timeDiv">
                             <el-input
-                                v-model="oData.contract.deposit"
+                                v-model="deposit"
                                 style="width: 220px"
                             ></el-input>
                             <span style="padding-left: 10px">元</span>
@@ -99,7 +116,7 @@
                     <el-form-item label="房费">
                         <div class="timeDiv">
                             <el-input
-                                v-model="oData.contract.paid"
+                                v-model="paid"
                                 style="width: 220px"
                             ></el-input>
                             <span style="padding-left: 10px">元</span>
@@ -141,7 +158,7 @@ export default {
             dialogVisible: true,
             consumerList: [],
             roomType: '',
-            times: '',
+            times: [],
             etime: '',
             roomTypeList: [],
             endDatePicker: this.endDate(),
@@ -154,20 +171,42 @@ export default {
                     return time.getTime() <= new Date().getTime() - 8.64e7;
                 }
             },
-            rshow: false
+            rshow: false,
+            publicName:'',
+            moneyList:[],
+            paid:0,
+            deposit:0,
+            moneychecked:{},
+            oDatas:{},
         };
     },
-    created() {
-        this.consumerList = this.oData.consumerList.length == 0?[{}]:this.oData.consumerList;
-        this.roomType = this.oData.roomDto.roomType;
-        this.times = [this.oData.contract.reserveStartDate, this.oData.contract.reserveEndDate];
-        this.etime = this.oData.contract.reserveEndDate;
-        this.remark = this.oData.contract.remark;
-        this.contractState = this.oData.contract.contractState;
-        this.roomName = this.oData.roomDto.roomName;
+    mounted() {
+        this.oDatas = JSON.parse(JSON.stringify(this.oData));
+        this.consumerList = this.oDatas.consumerList.length == 0?[{}]:this.oDatas.consumerList;
+        this.roomType = this.oDatas.roomDto.roomType;
+        this.times = [this.oDatas.contract.reserveStartDate,this.oDatas.contract.reserveEndDate];
+        this.etime = this.oDatas.contract.reserveEndDate;
+        this.remark = this.oDatas.contract.remark;
+        this.contractState = this.oDatas.contract.contractState;
+        this.roomName = this.oDatas.roomDto.roomName;
+        this.publicName = this.oDatas.contract.publicName;
+        this.deposit = this.oDatas.contract.deposit;
+        this.paid = this.oDatas.contract.paid;
         // 获取房间类型
         SystemService.getSysCodePid('20').then((res) => {
             this.roomTypeList = res;
+        });
+        SystemService.getSysCodePid('20').then((res) => {
+            for (let x = 0; x < res.length; x++) {
+                if(res[x].code == this.oDatas.roomDto.roomType){
+                    this.moneyList = JSON.parse(res[x].value).priceList;
+                }
+            }
+            for(let q=0;q<this.moneyList.length;q++){
+                if((this.moneyList[q].type == 'b' && this.oDatas.contract.contractType == '2') || (this.moneyList[q].type == 'r' && this.oDatas.contract.contractType == '1')){
+                    this.moneychecked = this.moneyList[q];
+                }
+            }
         });
     },
     methods: {
@@ -221,20 +260,21 @@ export default {
             this.$set(this.consumerList[0],'consumerNo',timesNum + String(num));
         },
         save() {
-                console.log(this.times)
             let dc = {
                 contract: {
-                    contractId: this.oData.contract.contractId,
+                    contractId: this.oDatas.contract.contractId,
                     reserveEndDate: this.times[1],
                     reserveStartDate: this.times[0],
-                    deposit: this.oData.contract.deposit,
+                    deposit: this.deposit,
+                    paid:this.paid,
+                    publicName:this.publicName
                 },
                 consumers:this.consumerList
             };
             if (this.roomId) {
                 dc.contract.roomId = this.roomId;
             } else {
-                dc.contract.roomId = this.oData.roomDto.roomId;
+                dc.contract.roomId = this.oDatas.roomDto.roomId;
             }
             RoomService.editOrder(dc).then((res) => {
                 if (res.status == 0) {
@@ -299,13 +339,24 @@ export default {
         // 计算天数
         times: function () {
             if (this.times) {
-                let dateDiff = new Date(this.times[1]).getTime() - new Date(this.times[0]).getTime(); //时间差的毫秒数
+                let dateDiff = new Date(this.times[1].replace(/-/g,'/')).getTime() - new Date(this.times[0].replace(/-/g,'/')).getTime(); //时间差的毫秒数
                 let dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000)); //计算出相差天数
                 this.days = dayDiff;
             } else {
                 this.days = 0;
             }
-        }
+            if (this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
+                this.paid = Number(this.days * this.moneychecked.price) ;
+                this.deposit = Number(this.moneychecked.deposit)
+            }
+        },
+        //计算预收金额
+        changeData() {
+            if (this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
+                this.paid = Number(this.days * this.moneychecked.price) ;
+                this.deposit = Number(this.moneychecked.deposit)
+            }
+        },
     }
 };
 </script>

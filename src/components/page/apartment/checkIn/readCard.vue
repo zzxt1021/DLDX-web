@@ -348,7 +348,7 @@ export default {
                     this.$message.warning('请成功写入房卡！');
                 }
             } else {
-               if (this.success) {
+              if (this.success) {
                     let st, et;
                     if (!this.stime) {
                         st = '0000-00-00 00:00';
@@ -366,7 +366,7 @@ export default {
                             hijack: false,
                             weekDay: [0, 1, 2, 3, 4, 5, 6],
                             key: this.writeVal,
-                            //key: '00242000',
+                            //key: '008881991',
                             openTimes: 0,
                             startTime: st,
                             endTime: et
@@ -377,7 +377,7 @@ export default {
                         let wid = msg.data.data;
                         EquipmentService.cardWithDevice({
                             cardId: this.writeVal,
-                            //cardId:'00242000',
+                            //cardId:'008881991',
                             deviceId: this.did,
                             roomId: this.rid,
                             roomName: this.rname,
@@ -387,7 +387,7 @@ export default {
                         }).then(() => {});
                         EquipmentService.cardInfo({
                             cardId: this.writeVal,
-                            //cardId:'00242000',
+                            //cardId:'008881991',
                             type: 'k',
                             usedUser: this.consumers[0].consumerName,
                             contractId: this.contractId,
@@ -396,10 +396,14 @@ export default {
                             usedRoomName:this.rname,
                         }).then(() => {});
                         this.$message.success('绑定成功！');
-                        this.bindSuccess();
+                        //this.bindSuccess();
+                        this.dialogVisible = false;
+                        this.$emit('funs', this.did);
                     } else if(msg.data.success == false && (msg.data.errorCode == -515 || msg.data.errorCode == 515)){
                         this.$message.success('该门卡已绑定房间设备！');
-                        this.bindSuccess();
+                        //this.bindSuccess();
+                        this.dialogVisible = false;
+                        this.$emit('funs', this.did);
                     } else {
                         this.$message.error('绑定失败！');
                     }

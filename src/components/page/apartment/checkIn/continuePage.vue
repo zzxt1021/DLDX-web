@@ -84,16 +84,16 @@ export default {
         };
     },
     mounted(){
-        RoomService.checkContractByRomm(this.roomData.roomId).then((res)=>{
-            console.log(res);
-            this.contractId = res.contract.contractId;
-            this.consumer.consumerName =  res.contract.consumerName;
-            this.consumer.consumerTel =  res.contract.consumerTel;
-            this.consumer.consumerNo =  res.contract.consumerNo;
-            this.times = [res.contract.reserveStartDate.substring(0,10),res.contract.reserveEndDate.substring(0,10)];
-            this.endTime = res.contract.reserveEndDate.substring(0,10)
+        // RoomService.checkContractByRomm(this.roomData.roomId).then((res)=>{
+        //     console.log(res);
+        //     this.contractId = res.contract.contractId;
+        //     this.consumer.consumerName =  res.contract.consumerName;
+        //     this.consumer.consumerTel =  res.contract.consumerTel;
+        //     this.consumer.consumerNo =  res.contract.consumerNo;
+        //     this.times = [res.contract.reserveStartDate.substring(0,10),res.contract.reserveEndDate.substring(0,10)];
+        //     this.endTime = res.contract.reserveEndDate.substring(0,10)
 
-        })
+        // })
     },
     methods: {
         endDate(){

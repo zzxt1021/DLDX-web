@@ -98,7 +98,11 @@ export default {
             this.roleData = res;
             if (this.odata) {
                 SystemService.allRole(this.odata.id).then((res) => {
-                    this.$refs.roleTree.setCheckedNodes(res);
+                    let nodes = []
+                    for(let m=0;m<res.length;m++){
+                        nodes = nodes.concat(res[m].nodes)
+                    }
+                    this.$refs.roleTree.setCheckedNodes(nodes);
                 });
             }
         });
@@ -109,7 +113,6 @@ export default {
             if(this.odata.idPath){
                 this.lastdeptId = this.odata.idPath.split('.');
                 this.lastdeptId.pop();
-                console.log(this.lastdeptId);
             }
             this.dept= {...this.odata};
         }
@@ -136,9 +139,15 @@ export default {
             }
             dept = Object.assign(this.dept, { parentCode, idPath });
             SystemService.editDept(dept).then((res) => {
-                console.log(res);
                 let deptId = res.data.id;
-                let mfIds = this.$refs.roleTree.getCheckedKeys().join();
+                let mfIdList = this.$refs.roleTree.getCheckedKeys(),xidList=[];
+                for(let x=0;x<mfIdList.length;x++){
+                    xidList.push(mfIdList[x]);
+                    if(xidList.indexOf(mfIdList[x].substring(0,1))<0){
+                        xidList.push(mfIdList[x].substring(0,1));
+                    }
+                }
+                let mfIds = xidList.join();
                 SystemService.editRole({ deptId, mfIds }).then((res) => {
                     this.$message.success('操作成功！');
                     this.$emit('func', 'ok');

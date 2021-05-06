@@ -190,18 +190,6 @@
                 </el-footer>
             </el-container>
         </el-dialog>
-        <!-- <el-dialog title="退房提示" width="20%" >
-            <div>
-                <el-input v-model="money"></el-input>
-            </div>
-            <template #footer>
-                <span class="dialog-footer">
-                <el-button @click="delShow = false">取 消</el-button>
-                <el-button type="primary" @click="backRoomT(2)">只退房</el-button>
-                <el-button type="primary" @click="backRoomT(1)">退房退押金</el-button>
-                </span>
-            </template>
-        </el-dialog> -->
     </div>
 </template>
 <script>
@@ -414,7 +402,7 @@ export default {
         closePage: function (data) {
             if (data[0] == 'ok') {
                 if (data[1] == 1) {
-                    this.ccontractId = data[3];
+                    this.ccontractId = data[3].contractId;
                     this.roomData.beds = data[2].beds;
                     this.roomData.useState = data[2].useState;
                     this.$forceUpdate();
@@ -422,9 +410,13 @@ export default {
             } else if (data[0] == 'close') {
             } else {
                 if (data[1] == 1) {
-                    this.ccontractId = data[3];
-                    this.roomData.beds = data[2].beds;
-                    this.roomData.useState = data[2].useState;
+                    this.ccontractId = data[3].contractId;
+                    if(data[2]){
+                        this.roomData.beds = data[2].beds?data[2].beds:this.roomData.beds;
+                        this.roomData.useState = data[2].useState;
+                        this.roomData.roomId = data[2].roomId;
+                        this.roomData.roomName = data[2].roomName;
+                    }
                     this.$forceUpdate();
                 }
                 this.meakCard(this.roomData, data[3]);
@@ -432,17 +424,21 @@ export default {
             this.roomShow = false;
         },
         // 制作房卡
-        meakCard: function (da, contractId) {
+        meakCard: function (da, contract) {
             this.roomData = da;
-            RoomService.checkContractByRomm(da.roomId).then((res) => {
-                for (let k = 0; k < res.length; k++) {
-                    if (res[k].contract.contractId == contractId) {
-                        this.cardtimes[0] = res[k].contract.reserveStartDate;
-                        this.cardtimes[1] = res[k].contract.reserveEndDate;
-                    }
-                }
-                this.cardShow = true;
-            });
+            this.cardtimes[0] = contract.reserveStartDate;
+            this.cardtimes[1] = contract.reserveEndDate;
+            this.cardShow = true;
+            // RoomService.checkContractByRomm(da.roomId).then((res) => {
+            //     for (let k = 0; k < res.length; k++) {
+            //         if (res[k].contract.contractId == contractId) {
+            //             this.cardtimes[0] = res.contract.reserveStartDate;
+            //             this.cardtimes[1] = res.contract.reserveEndDate;
+            //         }
+            //     }
+            //     console.log(this.cardtimes);
+                
+            // });
         },
         markCardn: function () {
             this.cardShow = false;

@@ -114,6 +114,7 @@
                         <el-table-column label="退房时间" align="center" prop="contract.checkOutTime" width="140"></el-table-column>
                         <!-- <el-table-column label="房费" align="center" prop="contract.paid"></el-table-column> -->
                         <el-table-column label="团队名称" align="center" prop="contract.publicName"></el-table-column>
+                        <el-table-column label="房费" align="center" prop="contract.paid"></el-table-column>
                         <el-table-column label="押金" align="center">
                             <template slot-scope="scope">
                                 <div style="display:flex;justify-content:center">
@@ -121,6 +122,12 @@
                                     <p class="tuiIcon" v-if="scope.row.contract.deposit && scope.row.contract.contractState == '4'" @click="backDes(scope.row)">退</p>
                                     <p v-if="scope.row.contract.deduction">扣费：{{scope.row.contract.deduction}}</p>
                                 </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="开票状态" align="center">
+                            <template slot-scope="scope">
+                                <p v-if="scope.row.contract.invoice">已开票</p>
+                                <p v-else>未开票</p>
                             </template>
                         </el-table-column>
                         <el-table-column label="订单状态" align="center">
@@ -353,7 +360,8 @@ export default {
             this.orderData = d;
             this.isInromm = true;
             this.editShow = true;
-            for(let k=0;k<beds.length;k++){
+            if(beds){
+                for(let k=0;k<beds.length;k++){
                     if(beds[k].state == 2){
                         this.$confirm('该房间存在未打扫的床位！','提示',{
                             confirmButtonText: '我已知晓',
@@ -361,7 +369,9 @@ export default {
                             type: 'warning'
                         })
                     }
+                }
             }
+            
             //this.doShow = true;
         },
         readCardn(val) {

@@ -44,11 +44,11 @@ export default {
         }
     },
     mounted(){
-         RoomService.checkContractByRomm(this.roomData.roomId).then((res)=>{
-            this.contractId = res.contract.contractId;
-            this.stime = res.contract.reserveStartDate.substring(0,10);
-            this.etime = res.contract.reserveEndDate.substring(0,10)
-        })
+        //  RoomService.checkContractByRomm(this.roomData.roomId).then((res)=>{
+        //     this.contractId = res.contract.contractId;
+        //     this.stime = res.contract.reserveStartDate.substring(0,10);
+        //     this.etime = res.contract.reserveEndDate.substring(0,10)
+        // })
     },
     methods:{
         save(){

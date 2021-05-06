@@ -210,11 +210,13 @@ export default {
             isbed:'10',
             nobf:this.roomData.bedNum == 1?true:false,//是否包房
             publicName:'',//团队名称
+            allRoomTypeList:[],//收费标准所有 
         };
     },
     mounted() {
         // 收费标准
         SystemService.getSysCodePid('20').then((res) => {
+            this.allRoomTypeList = res;
             for (let x = 0; x < res.length; x++) {
                 if(res[x].code == this.roomData.roomType){
                     this.moneyList = JSON.parse(res[x].value).priceList;
@@ -241,13 +243,13 @@ export default {
             this.consumerList.push({consumerSex:'男'});
         },
         // 选择收费标准
-        checkMoney(d, i) {
-            for (let k = 0; k < this.moneyList.length; k++) {
-                this.moneyList[k].checked = false;
-            }
-            this.moneyList[i].checked = true;
-            this.moneychecked = this.moneyList[i];
-        },
+        // checkMoney(d, i) {
+        //     for (let k = 0; k < this.moneyList.length; k++) {
+        //         this.moneyList[k].checked = false;
+        //     }
+        //     this.moneyList[i].checked = true;
+        //     this.moneychecked = this.moneyList[i];
+        // },
         // 格式化时间
         dateFormat(fmt, date) {
             let ret;
@@ -280,7 +282,17 @@ export default {
             this.rcShow = false;
             if(da!='close'){
                 this.roomName = da.roomName;
-                this.roomData={roomId:da.roomId};
+                this.roomData={roomId:da.roomId,roomType:da.roomType,useState:da.useState,roomName:da.roomName};
+                for (let x = 0; x < this.allRoomTypeList.length; x++) {
+                    if(this.allRoomTypeList[x].code == this.roomData.roomType){
+                        this.moneyList = JSON.parse(this.allRoomTypeList[x].value).priceList;
+                    }
+                }
+                for(let q=0;q<this.moneyList.length;q++){
+                    if((this.moneyList[q].type == 'b' && this.contractType == 2) || (this.moneyList[q].type == 'r' && this.contractType == 1)){
+                        this.moneychecked = this.moneyList[q];
+                    }
+                }
             }
         },
         // 读取身份证
@@ -396,13 +408,13 @@ export default {
                 for(let v=0;v<this.consumerList.length;v++){
                     this.consumerList[v].deposit = this.deposit;
                 }
-                this.$emit('func', 'okcard',1,data.room,data.contract.contractId);
+                this.$emit('func', 'okcard',1,data.room?data.room:this.roomData,data.contract);
             }).catch(()=>{
                 this.dialogVisible = false;
                 for(let v=0;v<this.consumerList.length;v++){
                     this.consumerList[v].deposit = this.deposit;
                 }
-                this.$emit('func', 'ok',1,data.room,data.contract.contractId);
+                this.$emit('func', 'ok',1,data.room,data.contract);
             })
         },
         //取消
@@ -468,7 +480,8 @@ export default {
         },
         //计算预收金额
         changeData() {
-            if (this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
+            console.log(this.rtype);
+            if (this.rtype == 1 && this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
                 this.paid = Number(this.days * this.moneychecked.price) ;
                 this.deposit = Number(this.moneychecked.deposit)
             }
