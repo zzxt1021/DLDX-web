@@ -409,8 +409,12 @@ export default {
         closeE(d) {
             if (d != 'close') {
                 if(d == 'okcard'){
-                    this.doShow = true;
-                    this.checkData = this.orderData;
+                    
+                    RoomService.checkContract(this.orderData.contract.contractId).then((res)=>{
+                        this.checkData = res;
+                        this.doShow = true;
+                    })
+                    //this.checkData = this.orderData;
                 }
                 this.find();
             }

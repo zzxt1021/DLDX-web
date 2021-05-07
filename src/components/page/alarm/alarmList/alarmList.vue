@@ -59,7 +59,11 @@
                                 </p>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="alarmTime" label="告警时间" align="center"></el-table-column>
+                        <el-table-column label="告警时间" align="center">
+                            <template slot-scope="scope">
+                                <p>{{fmtTime(scope.row.alarmTime)}}</p>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="roomName" label="房间号" align="center"></el-table-column>
                         <el-table-column label="处理状态" align="center">
                             <template slot-scope="scope">
@@ -150,6 +154,9 @@ export default {
                 };
             };
             return fmt;
+        },
+        fmtTime(t){
+            return this.dateFormat('YYYY-mm-dd HH:MM:SS',new Date(t));
         },
         // 查询按钮
         findAll(){

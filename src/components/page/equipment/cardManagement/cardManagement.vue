@@ -44,12 +44,12 @@
                 <el-table-column prop="roomName" label="使用房间" align="center"></el-table-column>
                 <el-table-column label="使用时间" align="center">
                     <template slot-scope="scope">
-                        <p v-if="scope.row.type == 'k'">
+                        <p v-if="scope.row.startTime!='0000-00-00 00:00'">
                             <span>{{ scope.row.startTime.substring(0, 10) }}</span>
                             <span> 至 </span>
                             <span>{{ scope.row.endTime.substring(0, 10) }}</span>
                         </p>
-                        <p v-if="scope.row.type == 'g'">无期限</p>
+                        <p v-else>无期限</p>
                     </template>
                 </el-table-column>
                 <el-table-column prop="mark" label="备注" align="center"></el-table-column>

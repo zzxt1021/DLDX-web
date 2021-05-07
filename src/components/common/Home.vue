@@ -69,7 +69,7 @@ export default {
             }
             this.tagsList = arr;
         });
-        //this.init();
+        this.init();
     },
     methods: {
         play2(){
@@ -105,6 +105,7 @@ export default {
             console.log('连接错误!!');
         },
         getMessage: function (msg) {
+            console.log(msg);
             if (msg.data != '连接成功') {
                 this.sosShow = true;
                 this.play2();
