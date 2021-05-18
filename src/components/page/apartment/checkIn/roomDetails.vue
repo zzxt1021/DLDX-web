@@ -94,7 +94,22 @@
                     </el-form-item> -->
                     <el-form-item label="入住时间" prop="times">
                         <div class="timeDiv">
-                            <div>
+                            <div v-if="rtype == 1">
+                                <el-date-picker class="date" v-model="times[0]" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" disabled> </el-date-picker>
+                                <span style="padding: 0 10px">至</span>
+                                <el-date-picker
+                                    class="date"
+                                    v-model="times[1]"
+                                    :picker-options="endDatePicker"
+                                    type="datetime"
+                                    placeholder="结束时间"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :default-time="['15:00:00']"
+                                    :clearable='false'
+                                >
+                                </el-date-picker>
+                            </div>
+                            <div v-else>
                                 <el-date-picker
                                     v-model="times"
                                     type="datetimerange"
@@ -211,6 +226,7 @@ export default {
             nobf:this.roomData.bedNum == 1?true:false,//是否包房
             publicName:'',//团队名称
             allRoomTypeList:[],//收费标准所有 
+            endDatePicker: this.endDate(),
         };
     },
     mounted() {
@@ -228,6 +244,10 @@ export default {
                 }
             }
         });
+        if(this.rtype == 1){
+            this.times[0] = this.dateFormat('YYYY-mm-dd',new Date())+' 00:00:00';
+            this.times[1] = this.dateFormat('YYYY-mm-dd',new Date())+' 15:00:00';
+        }
         if(this.roomData.bedNum == 1){
             this.contractType = 1;
         }
@@ -269,6 +289,13 @@ export default {
             }
             return fmt;
         },
+        endDate() {
+            return {
+                disabledDate(time) {
+                    return time.getTime() <= new Date().getTime() - 8.64e7;
+                }
+            };
+        },
         // 选择房间
         choiceRoom:function(){
             if(this.times.length!=2){
@@ -283,6 +310,7 @@ export default {
             if(da!='close'){
                 this.roomName = da.roomName;
                 this.roomData={roomId:da.roomId,roomType:da.roomType,useState:da.useState,roomName:da.roomName};
+                console.log(this.roomData);
                 for (let x = 0; x < this.allRoomTypeList.length; x++) {
                     if(this.allRoomTypeList[x].code == this.roomData.roomType){
                         this.moneyList = JSON.parse(this.allRoomTypeList[x].value).priceList;
@@ -365,8 +393,15 @@ export default {
                 this.$message.warning("请选择房间！");
                 return;
             }
-            let checkInTime = new Date(this.times[0]);
-            let checkOutTime = new Date(this.times[1]);
+            let checkInTime,checkOutTime;
+            if(this.rtype == 1){
+                checkInTime = new Date(this.times[0].replace('-','/'));
+                checkOutTime = new Date(this.times[1].replace('-','/'));
+            }else{
+                checkInTime = new Date(this.times[0]);
+                checkOutTime = new Date(this.times[1]);
+            }
+           
 
             let contract = {
                 roomId: this.roomData.roomId,
@@ -470,8 +505,15 @@ export default {
         },
         // 计算天数
         times: function () {
-            if (this.times) {
-                let dateDiff = new Date(this.times[1]).getTime() - new Date(this.times[0]).getTime(); //时间差的毫秒数
+            if (this.times.length>0) {
+                console.log(this.times);
+                let dateDiff = 0;
+                //时间差的毫秒数
+                if(this.rtype == 1){
+                    dateDiff = new Date(this.times[1].replace('-','/')).getTime() - new Date(this.times[0].replace('-','/')).getTime(); 
+                }else{
+                    dateDiff = new Date(this.times[1]).getTime() - new Date(this.times[0]).getTime()
+                }
                 let dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000)); //计算出相差天数
                 this.days = dayDiff;
             } else {
@@ -480,7 +522,6 @@ export default {
         },
         //计算预收金额
         changeData() {
-            console.log(this.rtype);
             if (this.rtype == 1 && this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
                 this.paid = Number(this.days * this.moneychecked.price) ;
                 this.deposit = Number(this.moneychecked.deposit)

@@ -140,6 +140,17 @@
                                 </el-row>
                             </el-col>
                         </el-row>
+                        <el-row class="htp" :gutter="20">
+                            <el-col :span="12">
+                                <el-row :gutter="20">
+                                    <el-col :span="8" style="text-align: right">是否包房：</el-col>
+                                    <el-col :span="12">
+                                        <p v-if="odata.contract.contractType == '1'">包房</p>
+                                        <p v-if="odata.contract.contractType == '2'">不包房</p>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-row>
                     </div>
                     <el-footer style="height: 40px; border-top: 1px solid #ccc;margin-top:20px">
                         <div class="btnss">

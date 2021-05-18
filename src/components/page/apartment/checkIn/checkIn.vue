@@ -402,9 +402,12 @@ export default {
         closePage: function (data) {
             if (data[0] == 'ok') {
                 if (data[1] == 1) {
+                    if(data[2]){
+                        this.roomData.beds = data[2].beds;
+                        this.roomData.useState = data[2].useState;
+                    }
                     this.ccontractId = data[3].contractId;
-                    this.roomData.beds = data[2].beds;
-                    this.roomData.useState = data[2].useState;
+                    
                     this.$forceUpdate();
                 }
             } else if (data[0] == 'close') {
