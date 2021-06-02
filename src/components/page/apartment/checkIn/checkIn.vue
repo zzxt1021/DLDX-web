@@ -134,8 +134,8 @@
                                             <img src="../../../../assets/img/doing.png" style="cursor: pointer;" v-if="bed.state == 2" @click="dsDoing(a,bed)"/>
                                         </p>
                                         <div class="yajin" v-if="bed.consumerList">
-                                            <p>
-                                                <span style="padding-right: 4px">{{ bed.consumerList[0].consumerName }}</span>
+                                            <p style="display: flex;justify-content: center;align-items: center;">
+                                                <span :title="bed.consumerList[0].consumerName" style="padding-right: 4px;max-width: 80px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;word-break: break-all;">{{ bed.consumerList[0].consumerName }}</span>
                                                 <span class="yjIcon" v-if="bed.deposit">押</span>
                                             </p>
                                         </div>
@@ -792,6 +792,9 @@ export default {
     padding: 2px;
     font-size: 14px;
     cursor: pointer;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
 }
 .roomBG {
     display: flex;

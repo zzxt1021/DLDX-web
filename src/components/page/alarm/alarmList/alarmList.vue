@@ -64,7 +64,7 @@
                                 <p>{{fmtTime(scope.row.alarmTime)}}</p>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="roomName" label="房间号" align="center" width="250"></el-table-column>
+                        <el-table-column prop="roomName" label="房间号" align="center" width="150"></el-table-column>
                         <el-table-column label="处理状态" align="center" width="250">
                             <template slot-scope="scope" style="overflow:hidden">
                                 <p v-if="scope.row.dealType == 4">已处理</p>

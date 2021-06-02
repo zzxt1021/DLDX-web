@@ -227,6 +227,7 @@ export default {
             publicName:'',//团队名称
             allRoomTypeList:[],//收费标准所有 
             endDatePicker: this.endDate(),
+            saving:true,//正在保存
         };
     },
     mounted() {
@@ -402,7 +403,11 @@ export default {
                 checkOutTime = new Date(this.times[1]);
             }
            
-
+            if(this.saving){
+                this.saving = false;
+            }else{
+                return
+            }
             let contract = {
                 roomId: this.roomData.roomId,
                 reserveStartDate: this.dateFormat('YYYY-mm-dd HH:MM:SS', checkInTime),
@@ -420,6 +425,7 @@ export default {
                 contract.contractState = 2;
             }
             RoomService.addOrder({ consumers: this.consumerList, contract: contract }).then((res) => {
+                this.saving = true;
                 if (res.status == 0) {
                     this.$message.success('办理成功！');
                     //if(contract.contractState == 1){
