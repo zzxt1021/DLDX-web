@@ -9,7 +9,8 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
 import md5 from 'js-md5';
-import * as echarts from 'echarts'
+import * as echarts from 'echarts';
+import { Loading } from 'element-ui'
 
 import axios from 'axios'
 Vue.prototype.$axios = axios
@@ -23,6 +24,18 @@ Vue.use(VueI18n);
 Vue.use(ElementUI, {
     size: 'small'
 });
+Vue.prototype.openLoading = function() {
+    const loading = this.$loading({           // 声明一个loading对象
+      lock: true,                             // 是否锁屏
+      text: '正在加载...',                     // 加载动画的文字
+      //spinner: 'el-icon-loading',             // 引入的loading图标
+      background: 'rgba(0, 0, 0, 0.3)',       // 背景颜色
+      target: '.sub-main',                    // 需要遮罩的区域
+      body: true,                              
+      customClass: 'mask'                     // 遮罩层新增类名
+    })
+    return loading;
+  }
 const i18n = new VueI18n({
     locale: 'zh', 
     messages

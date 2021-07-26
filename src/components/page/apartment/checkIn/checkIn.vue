@@ -349,7 +349,7 @@ export default {
             
         },
         // 退房
-       async backRoomT(t){
+       async backRoomT(t){ 
            if(this.bedData.deposit<Number(this.money)){
               this.$message.warning('输入的金额大于押金!');
               return
@@ -361,13 +361,17 @@ export default {
             }else if(t == 2){
                 dat={'contractId':contractId};
             }
+            const rLoading = this.openLoading();
             RoomService.checkOutRoomBad(dat).then(async(res) => {
+                rLoading.close();
                 if(res.status == 0){
                     this.$message.success('退房成功！');
                     this.delShow = false;
                     let roomDa = (await RoomService.getListRoom(this.roomData.roomId))[0];
                     this.roomData.useState =roomDa.useState;
                     this.roomData.beds = roomDa.beds;
+                }else{
+                    this.$message.error(res.msg);
                 }
             });
         },

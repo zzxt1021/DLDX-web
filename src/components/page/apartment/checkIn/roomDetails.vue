@@ -424,8 +424,10 @@ export default {
             } else {
                 contract.contractState = 2;
             }
+            const rLoading = this.openLoading();
             RoomService.addOrder({ consumers: this.consumerList, contract: contract }).then((res) => {
                 this.saving = true;
+                rLoading.close();
                 if (res.status == 0) {
                     this.$message.success('办理成功！');
                     //if(contract.contractState == 1){

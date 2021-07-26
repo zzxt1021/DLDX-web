@@ -347,14 +347,14 @@ export default {
             }
             if (this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
                 this.paid = Number(this.days * this.moneychecked.price) ;
-                this.deposit = Number(this.moneychecked.deposit)
+                //this.deposit = Number(this.moneychecked.deposit)
             }
         },
         //计算预收金额
         changeData() {
             if (this.times.length > 0 && JSON.stringify(this.moneychecked) != '{}') {
                 this.paid = Number(this.days * this.moneychecked.price) ;
-                this.deposit = Number(this.moneychecked.deposit)
+                //this.deposit = Number(this.moneychecked.deposit)
             }
         },
     }

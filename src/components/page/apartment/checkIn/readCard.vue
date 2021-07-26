@@ -52,10 +52,11 @@
                     <div style="width: 76.5%">
                         <el-date-picker
                                 v-model="times"
-                                type="daterange"
+                                type="datetimerange"
                                 range-separator="至"
                                 start-placeholder="开始日期"
                                 end-placeholder="结束日期"
+                                :default-time="['00:00:00','23:59:59']"
                                 prefix-icon=""
                             >
                         </el-date-picker>
@@ -357,6 +358,7 @@ export default {
                         st = this.stime.substring(0,16);
                         et = this.etime.substring(0,16);;
                     }
+                    const rLoading = this.openLoading();
                     const bdata = await EquipmentService.updateDevice({
                         deviceId: this.did,
                         action: 6,
@@ -384,7 +386,11 @@ export default {
                             lockUser: wid,
                             startTime: this.stime,
                             endTime: this.etime
-                        }).then(() => {});
+                        }).then((res) => {
+                            if(res.status!=0){
+                                this.$message.error(res.msg);
+                            }
+                        });
                         EquipmentService.cardInfo({
                             cardId: this.writeVal,
                             //cardId:'008881991',
@@ -394,17 +400,24 @@ export default {
                             usedRoomId: this.rid,
                             mark: this.mark,
                             usedRoomName:this.rname,
-                        }).then(() => {});
+                        }).then((res) => {
+                            if(res.status!=0){
+                                this.$message.error(res.msg);
+                            }
+                        });
+                        rLoading.close();
                         this.$message.success('绑定成功！');
                         //this.bindSuccess();
                         this.dialogVisible = false;
                         this.$emit('funs', this.did);
                     } else if(msg.data.success == false && (msg.data.errorCode == -515 || msg.data.errorCode == 515)){
                         this.$message.success('该门卡已绑定房间设备！');
+                        rLoading.close();
                         //this.bindSuccess();
                         this.dialogVisible = false;
                         this.$emit('funs', this.did);
                     } else {
+                        rLoading.close();
                         this.$message.error('绑定失败！');
                     }
                 } else {

@@ -113,13 +113,71 @@
                     <div style="margin-top:10px">
                         <el-row v-for="(d, x) in deviceList" :key="x">
                             <div v-if="d.deviceType == '10-5' && d.channel == 1">
-                                <el-col :span="4" >空调操作</el-col>
-                                <el-col :span="4">
-                                    <p class="ktbtn" @click="openKT(d.deviceId)">开空调</p>
-                                </el-col>
-                                <el-col :span="4">
-                                    <p  class="ktbtn" @click="closeKT(d.deviceId)">关空调</p>
-                                </el-col>
+                                <el-row>
+                                    <el-col :span="4" >空调开关操作</el-col>
+                                    <el-col :span="4">
+                                        <p class="ktbtn" @click="airConditioning('1',d.deviceId)">开空调</p>
+                                    </el-col>
+                                    <el-col :span="4">
+                                        <p  class="ktbtn" @click="airConditioning('2',d.deviceId)">关空调</p>
+                                    </el-col>
+                                </el-row>
+                               <el-row style="margin-top:15px">
+                                   <el-col :span="4" >空调温度操作</el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('4',d.deviceId)">20℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('5',d.deviceId)">21℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('6',d.deviceId)">22℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('7',d.deviceId)">23℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('8',d.deviceId)">24℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('9',d.deviceId)">25℃</p>
+                                    </el-col>
+                               </el-row>
+                               <el-row style="margin-top:8px">
+                                    <el-col :span="4">
+                                        <p >&nbsp;</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('10',d.deviceId)">26℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('11',d.deviceId)">27℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('12',d.deviceId)">28℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('13',d.deviceId)">29℃</p>
+                                    </el-col>
+                                    <el-col :span="3">
+                                        <p  class="ktbtn" @click="airConditioning('14',d.deviceId)">30℃</p>
+                                    </el-col>
+                               </el-row>
+                               <el-row style="margin-top:15px">
+                                    <el-col :span="4" >空调模式切换</el-col>
+                                     <el-col :span="4">
+                                        <p  class="ktbtn" @click="airConditioning('16',d.deviceId)">制冷</p>
+                                    </el-col>
+                                     <el-col :span="4">
+                                        <p  class="ktbtn" @click="airConditioning('17',d.deviceId)">除湿</p>
+                                    </el-col>
+                                     <el-col :span="4">
+                                        <p  class="ktbtn" @click="airConditioning('18',d.deviceId)">送风</p>
+                                    </el-col>
+                                     <el-col :span="4">
+                                        <p  class="ktbtn" @click="airConditioning('15',d.deviceId)">制热</p>
+                                    </el-col>
+                               </el-row>
                             </div>
                         </el-row>
                     </div>
@@ -340,27 +398,13 @@ export default {
             }
             this.lockShow = false;
         },
-        // 开空调
-        openKT:function(d){
+        // 空调操作
+        airConditioning:function(t,d){
             EquipmentService.updateDevice({
                 deviceId: d,
                     action: 1,
                     args: {
-                        buttonId:1
-                    }
-            }).then((res)=>{
-                if (res.status == 0) {
-                    this.$message.success('操作成功！');
-                }
-            })
-        },
-         // 关空调
-        closeKT:function(d){
-            EquipmentService.updateDevice({
-                deviceId: d,
-                    action: 1,
-                    args: {
-                        buttonId:2
+                        buttonId:t
                     }
             }).then((res)=>{
                 if (res.status == 0) {
