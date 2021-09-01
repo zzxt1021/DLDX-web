@@ -51,7 +51,10 @@ export const EquipmentService = {
   unbindCardDev(data){
     return request.sendPost('/base/card/unregiste/lock',data);
   },
-
+  // 门与锁关联
+  addRoomDevCard(data){
+    return request.sendPost('/room/contract/addCard',data);
+  },
   // 能耗列表
   getEnergyList(data){
     return request.sendPost('/device/power/days',data);

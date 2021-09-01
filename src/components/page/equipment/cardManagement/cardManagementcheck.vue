@@ -44,12 +44,12 @@
                 <el-table-column prop="roomName" label="使用房间" align="center"></el-table-column>
                 <el-table-column label="使用时间" align="center">
                     <template slot-scope="scope">
-                        <p v-if="scope.row.type == 'k'">
+                        <p v-if="scope.row.startTime">
                             <span>{{ scope.row.startTime.substring(0, 10) }}</span>
                             <span> 至 </span>
                             <span>{{ scope.row.endTime.substring(0, 10) }}</span>
                         </p>
-                        <p v-if="scope.row.type == 'g'">无期限</p>
+                        <!-- <p v-if="scope.row.type == 'g'">无期限</p> -->
                     </template>
                 </el-table-column>
                 <el-table-column prop="mark" label="备注" align="center"></el-table-column>
@@ -127,8 +127,8 @@ export default {
                 this.total = res.total;
             });
         },
-        delItem(cid, did) {
-            EquipmentService.unbindCardDev({ cardId: cid, deviceId: did }).then((res) => {
+        delItem(cid, did,rid) {
+            EquipmentService.unbindCardDev({ cardId: cid, deviceId: did,roomId:rid }).then((res) => {
                 if (res.status == 0) {
                     this.devNum++;
                 }
@@ -139,33 +139,36 @@ export default {
             });
         },
         //控客-解绑
-        delDev(dtt){
-             EquipmentService.updateDevice(dtt).then((res) => {});
-        },
+        // delDev(dtt){
+        //      EquipmentService.updateDevice(dtt).then((res) => {});
+        // },
         // 解绑
         delTem(da) {
+            console.log('解绑');
+            console.log(da);
+           // return;
             this.$confirm('是否确定解除门卡与门锁的关系?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
                 this.devNum = 0;
-                let uid = da.lockUser.split(',');
-                let uids = [];
-                for (let i = 0; i < uid.length; i++) {
-                    uids.push(Number(uid[i]));
-                }
+                // let uid = da.lockUser.split(',');
+                // let uids = [];
+                // for (let i = 0; i < uid.length; i++) {
+                //     uids.push(Number(uid[i]));
+                // }
                 this.dev = da.deviceId.split(',');
                 for (let x = 0; x < this.dev.length; x++) {
-                    let dtt = {
-                        action: '8',
-                        args: {
-                            userId: [uids[x]]
-                        },
-                        deviceId: this.dev[x]
-                    };
-                    this.delDev(dtt);
-                    this.delItem(da.cardId, this.dev[x]);
+                    // let dtt = {
+                    //     action: '8',
+                    //     args: {
+                    //         userId: [uids[x]]
+                    //     },
+                    //     deviceId: this.dev[x]
+                    // };
+                   // this.delDev(dtt);
+                    this.delItem(da.cardId, this.dev[x],da.roomId);
                 }
             })
             

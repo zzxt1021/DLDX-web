@@ -109,8 +109,8 @@ export default {
     data() {
         return {
             dialogVisible: true,
-            writeVal: '', //写入的值
-            success: false, //写入成功
+            writeVal: '00000001', //写入的值
+            success: true, //写入成功
             did: '', //设备id
             show: true,
             devList: [], //门锁设备列表
@@ -350,76 +350,83 @@ export default {
                 }
             } else {
               if (this.success) {
-                    let st, et;
-                    if (!this.stime) {
-                        st = '0000-00-00 00:00';
-                        et = '0000-00-00 00:00';
-                    } else {
-                        st = this.stime.substring(0,16);
-                        et = this.etime.substring(0,16);;
-                    }
-                    const rLoading = this.openLoading();
-                    const bdata = await EquipmentService.updateDevice({
-                        deviceId: this.did,
-                        action: 6,
-                        args: {
-                            openType: 3,
-                            permissions: true,
-                            hijack: false,
-                            weekDay: [0, 1, 2, 3, 4, 5, 6],
-                            key: this.writeVal,
-                            //key: '008881991',
-                            openTimes: 0,
-                            startTime: st,
-                            endTime: et
-                        }
-                    });
-                    let msg = JSON.parse(bdata.message);
-                    if (msg.data.success == true) {
-                        let wid = msg.data.data;
-                        EquipmentService.cardWithDevice({
-                            cardId: this.writeVal,
-                            //cardId:'008881991',
-                            deviceId: this.did,
-                            roomId: this.rid,
-                            roomName: this.rname,
-                            lockUser: wid,
-                            startTime: this.stime,
-                            endTime: this.etime
-                        }).then((res) => {
-                            if(res.status!=0){
-                                this.$message.error(res.msg);
-                            }
-                        });
-                        EquipmentService.cardInfo({
-                            cardId: this.writeVal,
-                            //cardId:'008881991',
-                            type: 'k',
-                            usedUser: this.consumers[0].consumerName,
-                            contractId: this.contractId,
-                            usedRoomId: this.rid,
-                            mark: this.mark,
-                            usedRoomName:this.rname,
-                        }).then((res) => {
-                            if(res.status!=0){
-                                this.$message.error(res.msg);
-                            }
-                        });
-                        rLoading.close();
+                const rLoading = this.openLoading();
+                  EquipmentService.addRoomDevCard({'contractId':this.contractId,'cardId':this.writeVal}).then((res)=>{
+                      rLoading.close();
+                      if(res.status==0){
                         this.$message.success('绑定成功！');
-                        //this.bindSuccess();
                         this.dialogVisible = false;
                         this.$emit('funs', this.did);
-                    } else if(msg.data.success == false && (msg.data.errorCode == -515 || msg.data.errorCode == 515)){
-                        this.$message.success('该门卡已绑定房间设备！');
-                        rLoading.close();
-                        //this.bindSuccess();
-                        this.dialogVisible = false;
-                        this.$emit('funs', this.did);
-                    } else {
-                        rLoading.close();
-                        this.$message.error('绑定失败！');
-                    }
+                      }
+                  })
+                    // let st, et;
+                    // if (!this.stime) {
+                    //     st = '0000-00-00 00:00';
+                    //     et = '0000-00-00 00:00';
+                    // } else {
+                    //     st = this.stime.substring(0,16);
+                    //     et = this.etime.substring(0,16);;
+                    // }
+                    // const rLoading = this.openLoading();
+                    // const bdata = await EquipmentService.updateDevice({
+                    //     deviceId: this.did,
+                    //     action: 6,
+                    //     args: {
+                    //         openType: 3,
+                    //         permissions: true,
+                    //         hijack: false,
+                    //         weekDay: [0, 1, 2, 3, 4, 5, 6],
+                    //         key: this.writeVal,
+                    //         //key: '008881991',
+                    //         openTimes: 0,
+                    //         startTime: st,
+                    //         endTime: et
+                    //     }
+                    // });
+                    // let msg = JSON.parse(bdata.message);
+                    // if (msg.data.success == true) {
+                    //     let wid = msg.data.data;
+                    //     EquipmentService.cardWithDevice({
+                    //         cardId: this.writeVal,
+                    //         //cardId:'008881991',
+                    //         deviceId: this.did,
+                    //         roomId: this.rid,
+                    //         roomName: this.rname,
+                    //         lockUser: wid,
+                    //         startTime: this.stime,
+                    //         endTime: this.etime
+                    //     }).then((res) => {
+                    //         if(res.status!=0){
+                    //             this.$message.error(res.msg);
+                    //         }
+                    //     });
+                    //     EquipmentService.cardInfo({
+                    //         cardId: this.writeVal,
+                    //         //cardId:'008881991',
+                    //         type: 'k',
+                    //         usedUser: this.consumers[0].consumerName,
+                    //         contractId: this.contractId,
+                    //         usedRoomId: this.rid,
+                    //         mark: this.mark,
+                    //         usedRoomName:this.rname,
+                    //     }).then((res) => {
+                    //         if(res.status!=0){
+                    //             this.$message.error(res.msg);
+                    //         }
+                    //     });
+                    //     rLoading.close();
+                    //     this.$message.success('绑定成功！');
+                    //     this.dialogVisible = false;
+                    //     this.$emit('funs', this.did);
+                    // } else if(msg.data.success == false && (msg.data.errorCode == -515 || msg.data.errorCode == 515)){
+                    //     this.$message.success('该门卡已绑定房间设备！');
+                    //     rLoading.close();
+                    //     this.dialogVisible = false;
+                    //     this.$emit('funs', this.did);
+                    // } else {
+                    //     rLoading.close();
+                    //     this.$message.error('绑定失败！');
+                    // }
                 } else {
                     this.$message.warning('请成功写入房卡！');
                 }

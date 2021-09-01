@@ -127,8 +127,8 @@ export default {
                 this.total = res.total;
             });
         },
-        delItem(cid, did) {
-            EquipmentService.unbindCardDev({ cardId: cid, deviceId: did }).then((res) => {
+        delItem(cid, did,rid) {
+            EquipmentService.unbindCardDev({ cardId: cid, deviceId: did,roomId:rid }).then((res) => {
                 if (res.status == 0) {
                     this.devNum++;
                 }
@@ -150,22 +150,22 @@ export default {
                 type: 'warning'
             }).then(() => {
                 this.devNum = 0;
-                let uid = da.lockUser.split(',');
-                let uids = [];
-                for (let i = 0; i < uid.length; i++) {
-                    uids.push(Number(uid[i]));
-                }
+                // let uid = da.lockUser.split(',');
+                // let uids = [];
+                // for (let i = 0; i < uid.length; i++) {
+                //     uids.push(Number(uid[i]));
+                // }
                 this.dev = da.deviceId.split(',');
                 for (let x = 0; x < this.dev.length; x++) {
-                    let dtt = {
-                        action: '8',
-                        args: {
-                            userId: [uids[x]]
-                        },
-                        deviceId: this.dev[x]
-                    };
-                    this.delDev(dtt);
-                    this.delItem(da.cardId, this.dev[x]);
+                    // let dtt = {
+                    //     action: '8',
+                    //     args: {
+                    //         userId: [uids[x]]
+                    //     },
+                    //     deviceId: this.dev[x]
+                    // };
+                    // this.delDev(dtt);
+                    this.delItem(da.cardId, this.dev[x],da.roomId);
                 }
             })
             
