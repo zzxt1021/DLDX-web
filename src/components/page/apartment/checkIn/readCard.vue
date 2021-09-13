@@ -109,8 +109,8 @@ export default {
     data() {
         return {
             dialogVisible: true,
-            writeVal: '00000001', //写入的值
-            success: true, //写入成功
+            writeVal: '', //写入的值
+            success: false, //写入成功
             did: '', //设备id
             show: true,
             devList: [], //门锁设备列表
@@ -306,7 +306,6 @@ export default {
                     } else if (msg.data.success == false && (msg.data.errorCode == -515 ||msg.data.errorCode == 515)) {
                         this.$message.success('该门卡已绑定房间设备！');
                         this.jishu();
-                        this.jishu();
                     } else {
                         console.log(res);
                         this.$message.warning(rname + '房间设备未绑定！');
@@ -357,7 +356,12 @@ export default {
                         this.$message.success('绑定成功！');
                         this.dialogVisible = false;
                         this.$emit('funs', this.did);
+                      }else{
+                          this.$message.warning(res.msg);
                       }
+                  }).error((err)=>{
+                    rLoading.close();
+                    this.$message.error(err);
                   })
                     // let st, et;
                     // if (!this.stime) {

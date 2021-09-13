@@ -139,12 +139,12 @@
                                 <p v-if="scope.row.contract.contractState == '5'">已取消</p>
                             </template>
                         </el-table-column>
-                        <!-- <el-table-column label="开票状态" align="center">
+                        <el-table-column label="是否包房" align="center">
                             <template slot-scope="scope">
-                                <p v-if="scope.row.contract.invoice">已开票</p>
-                                <p v-else>未开票</p>
+                                <p v-if="scope.row.contract.contractType == '2'">不包房</p>
+                                <p v-if="scope.row.contract.contractType == '1'">包房</p>
                             </template>
-                        </el-table-column> -->
+                        </el-table-column>
                         <el-table-column label="操作" width="155" align="center">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small" @click="checkOrder(scope.row)">查看</el-button>
@@ -172,8 +172,15 @@
                                     type="text"
                                     size="small"
                                     @click="editRoom(scope.row)"
-                                    v-if="!(scope.row.contract.contractState == '4' || scope.row.contract.contractState == '5')"
-                                    >编辑</el-button
+                                    v-if="scope.row.contract.contractState == '2' || scope.row.contract.contractState == '3'"
+                                    >预定</el-button
+                                >
+                                <el-button
+                                    type="text"
+                                    size="small"
+                                    @click="editRoom(scope.row)"
+                                    v-if="scope.row.contract.contractState == '1'"
+                                    >续住</el-button
                                 >
                                 <el-button
                                     type="text"

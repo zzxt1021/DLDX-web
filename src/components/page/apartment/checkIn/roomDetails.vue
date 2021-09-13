@@ -438,7 +438,10 @@ export default {
                 } else {
                     this.$message.warning(res.message);
                 }
-            });
+            }).error((err)=>{
+                rLoading.close();
+                this.$message.error(err);
+            })
         },
         // 办理成功后，是否绑定卡
         markSuccess:function(data){

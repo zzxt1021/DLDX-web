@@ -14,8 +14,8 @@ import { Loading } from 'element-ui'
 
 import axios from 'axios'
 Vue.prototype.$axios = axios
-axios.defaults.baseURL = '/api'  //关键代
-//axios.defaults.baseURL = ''  //关键代
+//axios.defaults.baseURL = '/api'  //关键代
+axios.defaults.baseURL = ''  //关键代
 
 Vue.config.productionTip = false;
 Vue.prototype.$md5 = md5;

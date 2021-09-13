@@ -260,6 +260,7 @@ export default {
             this.$set(this.consumerList[0],'consumerNo',timesNum + String(num));
         },
         save() {
+            const rLoading = this.openLoading();
             let dc = {
                 contract: {
                     contractId: this.oDatas.contract.contractId,
@@ -280,17 +281,20 @@ export default {
                 if (res.status == 0) {
                     if(this.isInromm){
                         RoomService.checkInRoom({ contractId: res.data.contractId }).then((red) => {
+                            rLoading.close();
                             if (red.status == '0') {
                                 this.$message.success('入住成功！');
                                 this.markSuccess();
                             }
                         });
                     }else{
+                        rLoading.close();
                         this.$message.success('编辑成功！');
                         this.$emit('funx', 'ok');
                     }
                    
                 } else {
+                    rLoading.close();
                     this.$message.error(res.message);
                 }
             });

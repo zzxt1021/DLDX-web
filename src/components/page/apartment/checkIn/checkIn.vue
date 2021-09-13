@@ -373,7 +373,11 @@ export default {
                 }else{
                     this.$message.error(res.msg);
                 }
-            });
+            }).error((err)=>{
+                rLoading.close();
+                this.$message.error(err);
+            })
+            
         },
         // 房间详情页打开
         moveInto: function (d, t) {
