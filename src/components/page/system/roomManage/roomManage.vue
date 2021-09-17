@@ -98,6 +98,8 @@ export default {
                     if(res.status == 0){
                         this.$message.success('操作完成！');
                         this.find();
+                    }else{
+                        this.$alert('出错了：'+res.message);
                     }
                 })
             });

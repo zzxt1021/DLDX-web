@@ -436,9 +436,9 @@ export default {
                        // this.$emit('func', 'ok',2);
                     //}
                 } else {
-                    this.$message.warning(res.message);
+                    this.$alert('出错了：'+res.message);
                 }
-            }).error((err)=>{
+            }).catch((err)=>{
                 rLoading.close();
                 this.$message.error(err);
             })

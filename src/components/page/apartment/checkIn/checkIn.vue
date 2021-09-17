@@ -371,9 +371,9 @@ export default {
                     this.roomData.useState =roomDa.useState;
                     this.roomData.beds = roomDa.beds;
                 }else{
-                    this.$message.error(res.msg);
+                    this.$alert('出错了：'+res.message);
                 }
-            }).error((err)=>{
+            }).catch((err)=>{
                 rLoading.close();
                 this.$message.error(err);
             })
@@ -622,6 +622,8 @@ export default {
                     if(res.status == 0){
                         this.$message.success('操作完成！');
                         this.find();
+                    }else{
+                        this.$alert('出错了：'+res.message);
                     }
                 })
             })

@@ -357,9 +357,9 @@ export default {
                         this.dialogVisible = false;
                         this.$emit('funs', this.did);
                       }else{
-                          this.$message.warning(res.msg);
+                        this.$alert('出错了：'+res.message);
                       }
-                  }).error((err)=>{
+                  }).catch((err)=>{
                     rLoading.close();
                     this.$message.error(err);
                   })

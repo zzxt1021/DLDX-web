@@ -295,7 +295,7 @@ export default {
                    
                 } else {
                     rLoading.close();
-                    this.$message.error(res.message);
+                    this.$alert('出错了：'+res.message);
                 }
             });
         },

@@ -110,7 +110,7 @@ export default {
                     this.$message.success('续住成功！');
                     this.$emit('funx', 'close');
                 }else{
-                    this.$message.error(res.message);
+                    this.$alert('出错了：'+res.message);
                 }
             })
         },
